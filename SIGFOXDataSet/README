@@ -82,3 +82,19 @@ sfxlib_norep_randfreq_randgain_30att.json
 	5000 packets using one repetition, randomly chosen frequency and
 	randomly chosen baseband gain between -30 and 0 dB. 30 dB external
 	attenuator between USRP and antenna to further decrease transmit power.
+
+
+The "scripts/" sub-directory contains code that was used to obtain these measurements:
+
+sigfox_loop.json
+
+	Transmit-receive loop for logging raw packet data, implemented as a
+	node RED flow.
+
+	Note that running this flow requires external software components that
+	are not included in this repository.
+
+process.py
+
+	Post-processing script that was used to transform raw data into JSON
+	files included in this dataset.
