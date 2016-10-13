@@ -1,18 +1,22 @@
 import os
 import json
 import datetime
+from natsort import natsorted
 
-PATH_TO_DATA = "/home/ijs/Desktop/eWINE_JSI_sigfox/data/"
-PATH_TO_OUTPUT = "/home/ijs/Desktop/eWINE_JSI_sigfox/data_feature_gen/"
+PATH_TO_DATA = "../data/"
+PATH_TO_OUTPUT = "../data_feature_gen/"
 
 experiment_no = 0
 for root, _, files in os.walk(PATH_TO_DATA):
-	for file in files:
+	for file in natsorted(files):
 		if not file.endswith(".json"):
 			continue
 		print(file)
-		out_file_name = "experiment-" + str(experiment_no) + "-" + file.replace(".json", "") + "-trans-0-recv-1.csv" 
-		f_out = open(os.path.join(PATH_TO_OUTPUT, out_file_name), "w")
+		directory = PATH_TO_OUTPUT + "experiment-" + str(experiment_no) + "-" + file.replace(".json", "")
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+		out_file_name = "trans-0-recv-1.csv" 
+		f_out = open(os.path.join(PATH_TO_OUTPUT, directory, out_file_name), "w")
 		seqno = 0
 		f = open(os.path.join(root, file), "r")
 		f_out.write("seq,rssi,snr,avg_snr,timestamp,attenuator,gain\n")
