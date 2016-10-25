@@ -54,7 +54,7 @@ def select_datasets_experiments(dataset_path = DATASET_PATH):
         
         
         print("Please input the numbers of experiments to be imported separated by a comma. Input * to select all experiments. Available experiments:")
-        for experiment_number, experiment_name in experiments[number_selected_dataset].items():
+        for experiment_number, experiment_name in sorted(experiments[number_selected_dataset].items()):
             experiment_description = experiment_name.split("-")[-1]
             print(experiment_number + " ... " + experiment_description)
         input_experiments = raw_input()
