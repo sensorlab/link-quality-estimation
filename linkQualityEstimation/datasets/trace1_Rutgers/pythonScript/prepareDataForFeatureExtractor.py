@@ -2,6 +2,7 @@ import os
 import sys
 import pandas as pd
 from shutil import rmtree
+from natsort import natsorted
 
 PATH = "../data/"
 FEATURE_EXTRACTOR_DATASETS = "../../../featureGenerator/datasets/dataset-2-rutgers_wifi/"
@@ -23,7 +24,7 @@ tmpDir = ""
 if os.path.exists(FEATURE_EXTRACTOR_DATASETS):
     rmtree(FEATURE_EXTRACTOR_DATASETS)
 os.makedirs(FEATURE_EXTRACTOR_DATASETS)
-for root, dirs, files in os.walk(PATH):
+for root, dirs, files in natsorted(os.walk(PATH)):
     root = root.lstrip()
     print root
     tmp = root[len(PATH):]
@@ -34,8 +35,8 @@ for root, dirs, files in os.walk(PATH):
             missing_values = 0
             fiveNumSummary = 0
             name = dir[1].split("_")
-            fromNode = name[1]
-            toNode = str("node" + file[len("sdec"):])
+            fromNode = name[1].replace("-", "_")
+            toNode = str("node" + file[len("sdec"):]).replace("-", "_")
             file = open(os.path.join(root, file), 'r')
             for line in file:
                 data = line.split()
@@ -51,15 +52,15 @@ for root, dirs, files in os.walk(PATH):
                 if tmpDir != dir[0]:
                     numberOfExperiments += 1
 
-                experimentPath = FEATURE_EXTRACTOR_DATASETS + "experiment-" + str(numberOfExperiments) + "-noise_level_" + dir[0]
+                experimentPath = FEATURE_EXTRACTOR_DATASETS + "experiment-" + str(numberOfExperiments) + "-noise_level_" + dir[0].replace("-", "_")
                 if not os.path.exists(experimentPath):
                     tmpDir = dir[0]
                     os.makedirs(experimentPath)
 
 
                 # Create csv file per link
-                csvFile = experimentPath + "/trans-" + fromNode + "-recev-" + toNode + ".csv"
-                print "trans-" + fromNode + "-recev-" + toNode + ".csv"
+                csvFile = experimentPath + "/trans-" + fromNode + "-recv-" + toNode + ".csv"
+                print "trans-" + fromNode + "-recv-" + toNode + ".csv"
                 df = pd.DataFrame({"seq": x, "rssi": y})
                 # Keep colum order
                 df = df[['seq', 'rssi']]
