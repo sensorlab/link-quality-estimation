@@ -5,9 +5,9 @@ from matplotlib import pyplot as plt
 from scipy.interpolate import UnivariateSpline
 import matplotlib.mlab as mlab
 import pandas as pd
-PATH = "/home/ado/Desktop/eWINE_Paris_SC2_RSSI/traces/Trace_1/data/"
-PATH_TO_FIGURE = "/home/ado/Desktop/eWINE_Paris_SC2_RSSI/traces/Trace_1/figures/"
-PATH_TO_NEW_DATASET = "/home/ado/Desktop/eWINE_Paris_SC2_RSSI/weka/pythonExample/dataSet/histogramClustering/"
+PATH = "../data/"
+PATH_TO_FIGURE = "../figures/perLink/"
+PATH_TO_NEW_DATASET = "../histogramClustering/"
 NUMBER_OF_PACKETS = 300.0
 NUMBER_OF_BINS = 40
 RSSI_MAX = 127
