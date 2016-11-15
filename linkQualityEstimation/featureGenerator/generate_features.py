@@ -89,9 +89,9 @@ def import_datasets_experiments(selected_datasets, selected_experiments, dataset
             links_path = os.path.join(dataset_path, datasets[dataset], experiments[dataset][experiment])
             for root, _, files in os.walk(links_path):
                 for file in files:
-                    link_data = np.genfromtxt(os.path.join(root, file), names=True, delimiter=',')
+                    link_data = np.genfromtxt(os.path.join(root, file), names=True, delimiter=',', usemask=False)
                     link_name = "".join(file.split(".")[:-1])
-                    imported_data[-1][0][-1][0].append((link_data, link_name))
+                    imported_data[-1][0][-1][0].append((np.atleast_1d(link_data), link_name))
     print("Successfully imported.")
     return imported_data
 
@@ -126,7 +126,7 @@ def feature_enrichment(data, prr_window, avg_std, skip_leading):
                         prr = received / float(prr_window)
                         prr_array.append(prr)
 
-                    experiment[num_link] = (append_fields(link, 'prr', prr_array), link_name)
+                    experiment[num_link] = (append_fields(link, 'prr', prr_array, usemask=False), link_name)
 
         if no_seq:
             print("It was not possible to calculate PRR for the following datasets:", no_seq)
@@ -166,7 +166,7 @@ def feature_enrichment(data, prr_window, avg_std, skip_leading):
                                 print("Unknown operation: " + mode)
                                 quit() # TODO: handle exception
                             results_array.append(result)
-                        experiment[num_link] = (append_fields(link, attribute + "_" + mode, results_array), link_name)
+                        experiment[num_link] = (append_fields(link, attribute + "_" + mode, results_array, usemask=False), link_name)
 
             if no_attr:
                 print("It was not possible to calculate the following attributes on some datasets:", no_attr, no_attr_dataset)
@@ -216,7 +216,7 @@ def define_categories(data, default_label, rules):
                         if not current_label:
                             current_label = default_label
                         defined_labels.append(current_label)
-                    experiment[num_link] = (append_fields(link, "class", defined_labels), link_name)
+                    experiment[num_link] = (append_fields(link, "class", defined_labels, usemask=False), link_name)
     print("Categories defined.")
     return data
 
@@ -234,6 +234,8 @@ def tokenize_for_export(data, out_format):
         for experiment, experiment_name in dataset:
             for num_link, (link, link_name) in enumerate(experiment):
                 number_rows = len(link)
+                if number_rows == 0:
+                	continue
                 for link_column_name, link_column_type in link.dtype.descr:
                     link_column_values = link[link_column_name]
                     if link_column_name not in composition.keys(): 
