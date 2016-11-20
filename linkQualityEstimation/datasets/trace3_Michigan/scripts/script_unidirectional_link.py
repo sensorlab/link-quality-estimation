@@ -1,10 +1,14 @@
 from matplotlib import pyplot as plt
 import matplotlib.mlab as mlab
 import pandas as pd
+import os
 
-PATH_TO_DATA_FILE = "/home/ijs/Desktop/eWINE_University_Michigan_RSS/data/css/Y.css"
-PATH_TO_RESULTS = "/home/ijs/Desktop/eWINE_University_Michigan_RSS/results/Y/unidirectional_links/"
+PATH_TO_DATA_FILE = "../data/css/Y.css"
+PATH_TO_RESULTS = "../results/Y/unidirectional_links/"
 NUMBER_SENSORS = 14
+
+if not os.path.exists(PATH_TO_RESULTS):
+    os.makedirs(PATH_TO_RESULTS)
 
 link_number = 0
 file = open(PATH_TO_DATA_FILE, 'r')
@@ -34,7 +38,7 @@ for line in file:
     file_five_num = open(SAVE_PATH, 'w')
     file_five_num.write(str(five_num_summary.describe())[:-15])
     file_five_num.close()
-    
+
     # Histogram
     n, bins, patches = plt.hist(y, bins='auto', normed=1, facecolor='green', alpha=0.5)
     pdf = mlab.normpdf(bins, five_num_summary.mean(), five_num_summary.std())
@@ -42,7 +46,7 @@ for line in file:
     plt.xlabel("RSSI")
     plt.ylabel('Probability')
     plt.title("Link - node %d to node %d" % (node1, node2))
-    
+
     SAVE_PATH = PATH_TO_RESULTS + "/unidirectional_link_" + str(node1) + "_" + str(node2) + ".png"
     plt.savefig(SAVE_PATH)
     #plt.show()
