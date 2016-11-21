@@ -31,7 +31,8 @@ for root, dirs, files in natsorted(os.walk(PATH)):
     dir = tmp.split("/")
     for file in files:
         if file.endswith(""):
-            x, y = [], []
+            x, y, z = [], [], []
+            current_seq = 0
             missing_values = 0
             fiveNumSummary = 0
             name = dir[1].split("_")
@@ -42,10 +43,23 @@ for root, dirs, files in natsorted(os.walk(PATH)):
                 data = line.split()
                 if len(data) > 1:
                     if int(data[0]) < NUMBER_OF_PACKETS and int(data[1]) <= RSSI_MAX and int(data[1]) >= RSSI_MIN:
+                        while current_seq < int(data[0]):
+                            x.append(current_seq)
+                            y.append(RSSI_MIN)
+                            z.append("false")
+                            current_seq += 1
                         x.append(data[0])
                         y.append(int(data[1]))
+                        z.append("true")
+                        current_seq += 1
+            while current_seq < NUMBER_OF_PACKETS:
+                x.append(current_seq)
+                y.append(RSSI_MIN)
+                z.append("false")
+                current_seq += 1
+
             file.close()
-            missing_values = (NUMBER_OF_PACKETS - len(y))
+            #missing_values = (NUMBER_OF_PACKETS - len(y))
 
             if len(y) > 0:
                 # Create directory path if it is missing
@@ -61,7 +75,7 @@ for root, dirs, files in natsorted(os.walk(PATH)):
                 # Create csv file per link
                 csvFile = experimentPath + "/trans-" + fromNode + "-recv-" + toNode + ".csv"
                 print "trans-" + fromNode + "-recv-" + toNode + ".csv"
-                df = pd.DataFrame({"seq": x, "rssi": y})
+                df = pd.DataFrame({"seq": x, "rssi": y, "received": z})
                 # Keep colum order
-                df = df[['seq', 'rssi']]
-                df.to_csv(csvFile, index=False, header=True, cols=['seq', 'rssi'])
+                df = df[['seq', 'rssi', 'received']]
+                df.to_csv(csvFile, index=False, header=True, cols=['seq', 'rssi', 'received'])
