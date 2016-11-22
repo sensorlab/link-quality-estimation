@@ -1,10 +1,15 @@
 from matplotlib import pyplot as plt
 import matplotlib.mlab as mlab
 import pandas as pd
+import os
 
-PATH_TO_DATA_FILE = "/home/ijs/Desktop/eWINE_University_Michigan_RSS/data/css/Y.css"
-PATH_TO_RESULTS = "/home/ijs/Desktop/eWINE_University_Michigan_RSS/results/Y/unidirectional_links_comparison/"
+
+PATH_TO_DATA_FILE = "../data/css/Y.css"
+PATH_TO_RESULTS = "../results/Y/unidirectional_links_comparison/"
 NUMBER_SENSORS = 14
+
+if not os.path.exists(PATH_TO_RESULTS):
+    os.makedirs(PATH_TO_RESULTS)
 
 link_data = dict()
 link_number = 0
@@ -47,7 +52,7 @@ for i in range(1, NUMBER_SENSORS):
             file_five_num.write(str(node1) + "-" + str(node2) + "\n" + str(five_num_summary.describe())[:-15] + "\n\n")
 
             # Graph
-            plt.subplot(1, 2, link + 1) 
+            plt.subplot(1, 2, link + 1)
             n, bins, patches = plt.hist(data, bins='auto', normed=1, facecolor='green', alpha=0.5)
             pdf = mlab.normpdf(bins, five_num_summary.mean(), five_num_summary.std())
             plt.plot(bins, pdf, 'r--')

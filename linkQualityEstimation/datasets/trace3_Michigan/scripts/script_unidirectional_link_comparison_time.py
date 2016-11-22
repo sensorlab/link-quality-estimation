@@ -2,10 +2,14 @@ from matplotlib import pyplot as plt
 import matplotlib.mlab as mlab
 import pandas as pd
 import numpy as np
+import os
 
-PATH_TO_DATA_FILE = "/home/ijs/Desktop/eWINE_University_Michigan_RSS/data/css/Y.css"
-PATH_TO_RESULTS = "/home/ijs/Desktop/eWINE_University_Michigan_RSS/results/Y/links_comparison_time/"
+PATH_TO_DATA_FILE = "../data/css/Y.css"
+PATH_TO_RESULTS = "../results/Y/links_comparison_time/"
 NUMBER_SENSORS = 14
+
+if not os.path.exists(PATH_TO_RESULTS):
+    os.makedirs(PATH_TO_RESULTS)
 
 link_data = dict()
 link_number = 0
@@ -47,7 +51,7 @@ for i in range(1, NUMBER_SENSORS):
                 plt.plot(x, data, 'r', label=str(node1) + "-" + str(node2))
             else:
                 plt.plot(x, data, 'g', label=str(node1) + "-" + str(node2))
-            
+
 
             node1, node2 = node2, node1
 
