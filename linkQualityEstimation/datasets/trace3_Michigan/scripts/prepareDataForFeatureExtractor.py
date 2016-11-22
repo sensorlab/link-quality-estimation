@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 PATH_TO_DATA_FILE = "../data/css/Y.css"
-FEATURE_EXTRACTOR_DATASETS = "../../../featureGenerator/datasets/dataset-4-michigan-CC1000/"
+FEATURE_EXTRACTOR_DATASETS = "../../../featureGenerator/datasets/dataset-4-michigan_CC1000/"
 
 NUMBER_SENSORS = 14
 
