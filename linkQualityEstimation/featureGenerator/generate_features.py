@@ -89,7 +89,7 @@ def import_datasets_experiments(selected_datasets, selected_experiments, dataset
             links_path = os.path.join(dataset_path, datasets[dataset], experiments[dataset][experiment])
             for root, _, files in os.walk(links_path):
                 for file in files:
-                    link_data = np.genfromtxt(os.path.join(root, file), names=True, delimiter=',', usemask=False)
+                    link_data = np.genfromtxt(os.path.join(root, file), dtype=None, names=True, delimiter=',', usemask=False)
                     link_name = "".join(file.split(".")[:-1])
                     imported_data[-1][0][-1][0].append((np.atleast_1d(link_data), link_name))
     print("Successfully imported.")
@@ -100,36 +100,51 @@ def import_datasets_experiments(selected_datasets, selected_experiments, dataset
 def feature_enrichment(data, prr_window, avg_std, skip_leading):
     # prr
     if prr_window:
-        no_seq = set()
+        no_seq_recv = set()
         for dataset, dataset_name in data:
             for experiment, _ in dataset:
                 for num_link, (link, link_name) in enumerate(experiment):
-                    if "seq" not in link.dtype.names:
-                        no_seq.add(dataset_name)
+                    if not any(column_name in link.dtype.names for column_name in ["seq", "received"]):
+                        no_seq_recv.add(dataset_name)
                         break
-                    # calculate
+                    # calculate (either by sequence numbers or received column)
                     prr_array = []
-                    seq_numbers = link["seq"]
-                    for curr_index, seq_number in enumerate(seq_numbers):
-                        received = 0
-                        backtrack = 0
-                        # this also counts the current packet as received
-                        # TODO: avoid calculating the same index two times
-                        while curr_index - backtrack >= 0 and int(seq_number) - int(prr_window) < int(seq_numbers[curr_index - backtrack]):
-                            backtrack += 1
-                            received += 1
-                        # add the difference for the first few packets
-                        difference = int(seq_number) - int(prr_window) + 1
-                        if difference < 0:
-                            received += abs(difference)
+                    if "seq" in link.dtype.names and "received" not in link.dtype.names:
+                        seq_numbers = link["seq"]
+                        for curr_index, seq_number in enumerate(seq_numbers):
+                            number_received = 0
+                            backtrack = 0
+                            # this also counts the current packet as received
+                            # TODO: avoid calculating the same index two times
+                            while curr_index - backtrack >= 0 and int(seq_number) - int(prr_window) < int(seq_numbers[curr_index - backtrack]):
+                                backtrack += 1
+                                number_received += 1
+                            # add the difference for the first few packets
+                            difference = int(seq_number) - int(prr_window) + 1
+                            if difference < 0:
+                                number_received += abs(difference)
 
-                        prr = received / float(prr_window)
-                        prr_array.append(prr)
+                            prr = number_received / float(prr_window)
+                            prr_array.append(prr)
+                    else:
+                        received_array = link["received"]
+                        for curr_index, _ in enumerate(received_array):
+                            difference = curr_index - int(prr_window) + 1
+                            if difference < 0:
+                                lower_bound = 0
+                                add_received = abs(difference)
+                            else:
+                                lower_bound = curr_index - int(prr_window) + 1
+                                add_received = 0
+                            number_received = sum(received_array[lower_bound:curr_index + 1]) + add_received
+
+                            prr = number_received / float(prr_window)
+                            prr_array.append(prr)
 
                     experiment[num_link] = (append_fields(link, 'prr', prr_array, usemask=False), link_name)
 
-        if no_seq:
-            print("It was not possible to calculate PRR for the following datasets:", no_seq)
+        if no_seq_recv:
+            print("It was not possible to calculate PRR for the following datasets:", no_seq_recv)
     
     # avg/std
     if avg_std:
@@ -235,13 +250,13 @@ def tokenize_for_export(data, out_format):
             for num_link, (link, link_name) in enumerate(experiment):
                 number_rows = len(link)
                 if number_rows == 0:
-                	continue
+                    continue
                 for link_column_name, link_column_type in link.dtype.descr:
                     link_column_values = link[link_column_name]
                     if link_column_name not in composition.keys(): 
                         composition[link_column_name] = {}
                         composition[link_column_name]["values"] = []
-                        if link_column_name == "class":
+                        if link_column_name in ("class", "received"):
                             data_type = "class"
                         else:
                             data_type = "numeric"
