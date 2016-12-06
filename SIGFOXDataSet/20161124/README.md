@@ -56,13 +56,11 @@ describes one transmitted packet:
         "rx": {
             "seqNumber": "2461",
             "avgSnr": "10.67",
-            "lat": "46",
             "station": "0BF2",
             "snr": "8.73",
             "time": "1477563622",
             "device": "1CF14C",
             "rssi": "-109.00",
-            "lng": "15",
             "data": "0000"
         },
         "tx": {
