@@ -14,6 +14,9 @@ def load_pkts(tx_log, rx_log):
 	for line in open(rx_log):
 		p = json.loads(line)
 
+		del p['lat']
+		del p['lng']
+
 		packets[p['data']]['rx'] = p
 
 	packets_sorted = packets.values()

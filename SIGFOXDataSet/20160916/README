@@ -19,13 +19,11 @@ describes one packet:
         "rx": {
             "seqNumber": "2328",
             "avgSnr": "8.91",
-            "lat": "46",
             "station": "0BF2",
             "snr": "8.25",
             "time": "1473760937",
             "device": "1CF14C",
             "rssi": "-79.00",
-            "lng": "15",
             "data": "0000"
         },
         "tx": {

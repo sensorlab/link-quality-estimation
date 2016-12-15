@@ -3,7 +3,7 @@ import json
 import numpy as np
 import os
 
-OUTPATH = "."
+OUTPATH = "sigfox_dataset_20161124"
 
 def load_pkts(tx_log, rx_log):
 	packets = {}
@@ -18,6 +18,9 @@ def load_pkts(tx_log, rx_log):
 	for line in open(rx_log):
 		p = json.loads(line)
 
+		del p['lat']
+		del p['lng']
+
 		packets[p['data']]['rx'] = p
 
 	packets_sorted = packets.values()
@@ -27,7 +30,7 @@ def load_pkts(tx_log, rx_log):
 
 def process_campaign():
 	CAMPAIGN = OUTPATH + "/sfxlib_norep_30att"
-	RAW_PATH = "../raw/*_log_ijs_meritve_20161124"
+	RAW_PATH = "raw/*_log_ijs_meritve_20161124"
 
 	pkts = load_pkts(RAW_PATH.replace("*","tx"), RAW_PATH.replace("*","rx"))
 
