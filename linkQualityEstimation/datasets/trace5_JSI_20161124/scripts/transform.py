@@ -7,7 +7,7 @@ import numpy as np
 import sys
 import pandas as pd
 
-PATH_TO_DATA = "../data/20161124/"
+PATH_TO_DATA = "../data/"
 PATH_TO_OUTPUT = "../data_feature_gen/"
 TX_ATTRIBUTES =  ["timestamp", "attenuator", "pga_gain"]
 RX_ATTRIBUTES = ["rssi", "snr", "avgSnr"]

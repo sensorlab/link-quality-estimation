@@ -6,7 +6,7 @@ from matplotlib.pyplot import *
 from numpy import *
 #from sklearn import preprocessing
 
-data = json.load(open("sfxlib_norep_30att.json"))
+data = json.load(open("../data/sfxlib_norep_30att.json"))
 
 
 
