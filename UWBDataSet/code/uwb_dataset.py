@@ -41,6 +41,12 @@ if __name__ == '__main__':
     print("-------------------------------")
     data = import_from_files()
     print("-------------------------------")
+    
+    for item in data:
+        item[15:] = item[15:]/float(item[2])
+    
+    print(data[0][10:20])
+    
     # print dimensions and data
     print("Number of samples in dataset: %d" % len(data))
     print("Length of one sample: %d" % len(data[0]))

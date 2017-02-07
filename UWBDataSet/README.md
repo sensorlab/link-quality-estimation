@@ -33,7 +33,7 @@ Whole data set is randomized and later split into 7 smaller files.
 First line in every data set file is a header with column names. Elements of every sample are:
 * NLOS (1 if NLOS, 0 if LOS)
 * Measured range (time of flight)
-* FP_IDX (index of detected first path element in CIR accumulator: in data set it can be accessed by **first_path_index+15**)
+* FP_IDX (index of detected first path element in channel impulse response (CIR) accumulator: in data set it can be accessed by **first_path_index+15**)
 * FP_AMP1 (first path amplitude - part1) [look in user manual](http://thetoolchain.com/mirror/dw1000/dw1000_user_manual_v2.05.pdf)
 * FP_AMP2 (first path amplitude - part2) [look in user manual](http://thetoolchain.com/mirror/dw1000/dw1000_user_manual_v2.05.pdf) 
 * FP_AMP3 (first path amplitude - part3) [look in user manual](http://thetoolchain.com/mirror/dw1000/dw1000_user_manual_v2.05.pdf)
@@ -49,4 +49,18 @@ First line in every data set file is a header with column names. Elements of eve
 * CIR (absolute value of channel impulse response: 1016 samples with 1 nanosecond resolution)
 
 ## Importing Data Set in Python
-To import data set data into Python environment, **uwb_dataset.py** script from folder **code** can be used. 
+To import data set data into Python environment, **uwb_dataset.py** script from folder **code** can be used. The CIR data still needs to be divided by number of acquired RX preamble samples (RX_PACC).
+
+	import uwb_dataset
+	
+	# import raw data
+	data = import_from_files()
+	
+	# divide CIR by RX preable count (get CIR of single preamble pulse)
+	# item[2] represents number of acquired preamble symbols
+	for item in data:
+		item[15:] = item[15:]/float(item[2])
+	
+	print(data)
+
+		
