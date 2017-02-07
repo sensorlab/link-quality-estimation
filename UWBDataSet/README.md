@@ -16,9 +16,9 @@ For measurements two UWB nodes were used: one node as an anchor and the second n
 ## Data Set Structure
 Folder with data set is organized as follows:
 
-	+ **code**
+	+ code
 		|____ uwb_dataset.py
-	+ **dataset**
+	+ dataset
 		|____ uwb_dataset_part1.csv
 		|____ uwb_dataset_part2.csv
 		|____ uwb_dataset_part3.csv
@@ -26,4 +26,8 @@ Folder with data set is organized as follows:
 		|____ uwb_dataset_part5.csv
 		|____ uwb_dataset_part6.csv
 		|____ uwb_dataset_part7.csv
+
+Whole data set is randomized and later split into 7 smaller files.
+
+## File Structure
 
