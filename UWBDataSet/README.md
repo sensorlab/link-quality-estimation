@@ -30,4 +30,23 @@ Folder with data set is organized as follows:
 Whole data set is randomized and later split into 7 smaller files.
 
 ## File Structure
+First line in every data set file is a header with column names. Elements of every sample are:
+* NLOS (1 if NLOS, 0 if LOS)
+* Measured range (time of flight)
+* FP_IDX (index of detected first path element in CIR accumulator: in data set it can be accessed by **first_path_index+15**)
+* FP_AMP1 (first path amplitude - part1) [look in user manual](http://thetoolchain.com/mirror/dw1000/dw1000_user_manual_v2.05.pdf)
+* FP_AMP2 (first path amplitude - part2) [look in user manual](http://thetoolchain.com/mirror/dw1000/dw1000_user_manual_v2.05.pdf) 
+* FP_AMP3 (first path amplitude - part3) [look in user manual](http://thetoolchain.com/mirror/dw1000/dw1000_user_manual_v2.05.pdf)
+* STDEV_NOISE (standard deviation of noise)
+* CIR_PWR (total channel impulse response power)
+* MAX_NOISE (maximum value of noise)
+* RXPACC (received RX preamble symbols)
+* CH (channel number)
+* FRAME_LEN (length of frame)
+* PREAM_LEN (preamble length)
+* BITRATE
+* PRFR (pulse repetition frequency rate in MHz)
+* CIR (absolute value of channel impulse response: 1016 samples with 1 nanosecond resolution)
 
+## Importing Data Set in Python
+To import data set data into Python environment, **uwb_dataset.py** script from folder **code** can be used. 
