@@ -4,6 +4,11 @@ import weka.classifiers.Classifier;
 import weka.classifiers.trees.J48;
 import weka.filters.unsupervised.attribute.Remove;
 import weka.classifiers.Evaluation;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
+import weka.core.Attribute;
+import weka.filters.unsupervised.attribute.SortLabels;
+import weka.filters.MultiFilter;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -22,40 +27,23 @@ import java.util.ListIterator;
 
 import java.io.PrintWriter;
 
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
-import weka.core.Attribute;
-import weka.filters.unsupervised.attribute.SortLabels;
-import weka.filters.MultiFilter;
 
-class MapUtil
-{
-    public static <K, V extends Comparable<? super V>> Map<K, V> 
-        sortByValue( Map<K, V> map )
-    {
-        List<Map.Entry<K, V>> list =
-            new LinkedList<Map.Entry<K, V>>( map.entrySet() );
-        Collections.sort( list, new Comparator<Map.Entry<K, V>>()
-        {
-            public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
-            {
-                return (o1.getValue()).compareTo( o2.getValue() );
-            }
-        } );
+class Util {
+	
+	public static <K,V extends Comparable<? super V>> Map<K,V> sortMapByValue(Map<K,V> map) {
+		List<Map.Entry<K,V>> list = new LinkedList<Map.Entry<K,V>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<K,V>>() {
+			public int compare(Map.Entry<K,V> o1, Map.Entry<K,V> o2) {
+				return (o1.getValue()).compareTo(o2.getValue());
+			}
+		});
 
-        Map<K, V> result = new LinkedHashMap<K, V>();
-        for (Map.Entry<K, V> entry : list)
-        {
-            result.put( entry.getKey(), entry.getValue() );
-        }
-        return result;
-    }
-}
-
-
-public class TryAllFeatures {
-	static final String FILENAME = "../dataset-10-JSI_sigfox_20161124.arff";
-	static final List<String> unwantedAttributes = Arrays.asList("prr", "seq", "received", "attenuator", "link_num", "experiment_num", "pga_gain");
+		Map<K,V> result = new LinkedHashMap<K,V>();
+		for(Map.Entry<K,V> entry : list) {
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
+	}
 
 	public static Set<Set<Integer>> powerSet(Set<Integer> originalSet) {
 		Set<Set<Integer>> sets = new HashSet<Set<Integer>>();
@@ -66,7 +54,7 @@ public class TryAllFeatures {
 		List<Integer> list = new ArrayList<Integer>(originalSet);
 		Integer head = list.get(0);
 		Set<Integer> rest = new HashSet<Integer>(list.subList(1, list.size()));
-		for (Set<Integer> set : powerSet(rest)) {
+		for(Set<Integer> set : powerSet(rest)) {
 			Set<Integer> newSet = new HashSet<Integer>();
 			newSet.add(head);
 			newSet.addAll(set);
@@ -76,7 +64,7 @@ public class TryAllFeatures {
 		return sets;
 	}
 
-	public static int[] convertToArray(Set<Integer> set) {
+	public static int[] convertSetToArray(Set<Integer> set) {
 		int[] retArray = new int[set.size()];
 		int index = 0;
 		for(Integer i : set) {
@@ -84,25 +72,67 @@ public class TryAllFeatures {
 		}
 		return retArray;
 	}
+}
 
-	public static void main(String[] args) throws Exception {
-		Set<Integer> attributeIndices = new HashSet<Integer>();
-		Map<String, Float> allModels = new HashMap<String,Float>();
-		Random rand = new Random(1);
-		Remove removeUnwanted = new Remove();
-		Remove removeOption = new Remove();
-		DataSource source = new DataSource(FILENAME);
-		Instances data = source.getDataSet();
-		SortLabels sortLabels = new SortLabels();
-		MultiFilter multiFilter = new MultiFilter();
-		Filter[] filters;
+
+class WekaClassificationModelBuilder {
+
+	String inputFileName;
+	String outputDirectory;
+
+	Set<Integer> attributeIndices;
+	Map<String, Double> allModels;
+	Random rand;
+	Remove removeUnwanted;
+	Remove removeOption;
+	DataSource source;
+	Instances data;
+	SortLabels sortLabels;
+	MultiFilter multiFilter;
+	Filter[] filters;
+
+	String unwantedAttributesArgument;
+	Attribute attribute;
+	int numberOfAttributes;
+	int numberOfUnwantedAttributes;
+	Integer classIndex;
+	Integer numberOfUnwantedAttributesBeforeClass;
+	List<String> unwantedAttributes;
+	
+
+	WekaClassificationModelBuilder(String inputFileName, String outputDirectory, List<String> unwantedAttributes) {
 		
-		// get indices of unwanted attributes and class index
-		String unwantedAttributesArgument = "";
-		Attribute attribute;
-		int numberOfAttributes = data.numAttributes();
-		int numberOfUnwantedAttributes = 0;
-		Integer classIndex = null;
+		this.inputFileName = inputFileName;
+		this.outputDirectory = outputDirectory;
+		this.unwantedAttributes = unwantedAttributes;
+
+		attributeIndices = new HashSet<Integer>();
+		rand = new Random(1);
+		removeUnwanted = new Remove();
+		removeOption = new Remove();
+		try {
+			source = new DataSource(inputFileName);
+			data = source.getDataSet();
+		}
+		catch(Exception e) {
+			e.printStackTrace(System.out);
+			System.exit(1);
+		}
+		
+		sortLabels = new SortLabels();
+		multiFilter = new MultiFilter();
+		
+		unwantedAttributesArgument = "";
+		numberOfAttributes = data.numAttributes();
+		numberOfUnwantedAttributes = 0;
+		classIndex = null;
+		numberOfUnwantedAttributesBeforeClass = 0;
+
+		setClassAndUnwanted();
+	}
+
+
+	private void setClassAndUnwanted() {
 		
 		for(int attributeIndex = 0; attributeIndex < numberOfAttributes; attributeIndex++) {
 			attribute = data.attribute(attributeIndex);
@@ -112,44 +142,69 @@ public class TryAllFeatures {
 			}
 			if(unwantedAttributes.contains(attribute.name())) {
 				numberOfUnwantedAttributes += 1;
+				if(classIndex == null)
+					numberOfUnwantedAttributesBeforeClass += 1;
 				if(!unwantedAttributesArgument.equals(""))
 					unwantedAttributesArgument += ",";
 				unwantedAttributesArgument += Integer.toString(attributeIndex + 1);
 			}
 		}
+
+		if(classIndex == null) {
+			System.out.println("Input file contains no attribute named 'class'!");
+			System.exit(1);
+		}
 		
 		data.setClassIndex(classIndex - 1);
 		
-		sortLabels.setAttributeIndices(Integer.toString(classIndex));
-		sortLabels.setInputFormat(data);
+		sortLabels.setAttributeIndices(Integer.toString(classIndex));		
+		removeUnwanted.setAttributeIndices(unwantedAttributesArgument);
 		
-		removeUnwanted.setAttributeIndices(unwantedAttributesArgument); // starts at 1
-		removeUnwanted.setInputFormat(data);
-		
-		removeOption.setInputFormat(data);
+		try {
+			sortLabels.setInputFormat(data);
+			removeUnwanted.setInputFormat(data);
+			removeOption.setInputFormat(data);
+		}
+		catch(Exception e) {
+			e.printStackTrace(System.out);
+			System.exit(1);
+		}
+	}
+	
 
+	public void buildAllModels(boolean outputToFile, Classifier cls, int folds) throws Exception {
+		
+		allModels = new HashMap<String,Double>();
+		String topTreeFeature = "N/A";
+		boolean isTree = false;
+
+		if(J48.class.isInstance(cls)) {
+			isTree = true;
+		}
+		
 		// calculate all possible combinations of features (removal)
 		IntStream.range(0, numberOfAttributes - numberOfUnwantedAttributes).forEach(n -> {
 			attributeIndices.add(n);
 		});
 		
-		int correctedClassIndex = classIndex - numberOfUnwantedAttributes;
+		// incorrect, attributes can also be after the class
+		int correctedClassIndex = classIndex - (numberOfUnwantedAttributesBeforeClass + 1);
 		int maxSize = data.numAttributes() - numberOfUnwantedAttributes - 1;
 		
-		for(Set<Integer> option: powerSet(attributeIndices)) {
+		for(Set<Integer> option: Util.powerSet(attributeIndices)) {
+
 			if(option.contains(correctedClassIndex) || option.size() >= maxSize) {
 				continue;
 			}
+
 			data = source.getDataSet();
-			//TODO: doesn't always select the right class
 			data.setClassIndex(classIndex - 1);
-			
 
 			// sort class names, remove unwanted attributes
 			// remove attributes
 			if(!option.isEmpty()) {
 				filters = new Filter[3];
-				removeOption.setAttributeIndicesArray(convertToArray(option));
+				removeOption.setAttributeIndicesArray(Util.convertSetToArray(option));
 				filters[2] = removeOption;
 			}
 			else {
@@ -163,7 +218,7 @@ public class TryAllFeatures {
 			
 			// print used attributes
 			String usedAttributes = "";
-			//System.out.println(option);
+
 			for(int attributeIndex = 0; attributeIndex < data.numAttributes(); attributeIndex++) {
 				attribute = data.attribute(attributeIndex);
 				if(attribute.name().equals("class")) {
@@ -173,77 +228,83 @@ public class TryAllFeatures {
 			}
 			System.out.println("Used attrs: " + usedAttributes);
 
-			Classifier tree = new J48();
-			tree.buildClassifier(data);
+			cls.buildClassifier(data);
 			
-			// format output, only first 3 features in decision tree
-			// TODO: fix, doesn't work correctly in all cases
-			String bestThreeFeatures = "";
-			String[] lines;
-			try {
-				String stringTree = tree.toString();
-				lines = stringTree.split(System.getProperty("line.separator"));
-				bestThreeFeatures += lines[3].split(" ")[0];
-				//bestThreeFeatures += ", " + lines[4].split(" ")[3];
-				//bestThreeFeatures += ", " + lines[5].split(" ")[6];
+
+			if(isTree) {
+				String[] topTreeSplit = ((J48)cls).prefix().split(System.getProperty("line.separator"))[0].split(":");
+				if(topTreeSplit.length > 1 && topTreeSplit[0].length() > 0)
+					topTreeFeature = topTreeSplit[0].substring(1);
+				else	
+					topTreeFeature = "N/A";
+
+				System.out.println("Top of the tree: " + topTreeFeature);
 			}
-			catch(Exception e) {
-				System.out.println("------------------------------------------------");
-			}
-			System.out.println("Best three: " + bestThreeFeatures);
 			
+
 			Evaluation eval = new Evaluation(data);
-			int folds = 10;
-			eval.crossValidateModel(tree, data, folds, rand);
+			eval.crossValidateModel(cls, data, folds, rand);
 			
 			String confusionMatrix = eval.toMatrixString();
-			//System.out.println(confusionMatrix);
 			String summary = eval.toSummaryString();
-			System.out.println(summary);
-			lines = summary.split(System.getProperty("line.separator"));
-			int lengthLine = lines[1].split(" ").length;
-			int backtrack = 0;
-			boolean success = false;
-			Float correctlyClassified = null;
-			
-			while(!success) {
-				try {
-					correctlyClassified = Float.parseFloat(lines[1].split(" ")[lengthLine - backtrack]); // relative to size
-					success = true;
-				}
-				catch(Exception e) {
-					backtrack++;
-				}
-			}
-			String key = "Used: " + usedAttributes + "\nTop of the tree: " + bestThreeFeatures + "\nCorrectly classified: " + correctlyClassified + "%\n" + confusionMatrix + "\n-------------------------------------------------------\n\n";
+			Double correctlyClassified = eval.pctCorrect();
+
+
+			String key = "Used: " + usedAttributes + "\nTop of the tree: " + topTreeFeature + "\nCorrectly classified: " +
+				correctlyClassified + "%\n" + confusionMatrix + "\n-------------------------------------------------------\n\n";
 			allModels.put(key, correctlyClassified);
-			try{
-			    PrintWriter writer = new PrintWriter("../output/" + usedAttributes + ".txt", "UTF-8");
-			    writer.println("Best: " + bestThreeFeatures);
-			    writer.println(confusionMatrix);
-			    writer.println(summary);
-			    writer.println(tree);
-			    writer.close();
-			} catch (Exception e) {
-			   System.out.println(e);
+			
+			if(outputToFile) {
+				try {
+					PrintWriter writer = new PrintWriter("../output/" + usedAttributes + ".txt", "UTF-8");
+					writer.println("Best: " + topTreeFeature);
+					writer.println(confusionMatrix);
+					writer.println(summary);
+					writer.println(cls);
+					writer.close();
+				} catch (Exception e) {
+					e.printStackTrace(System.out);
+					System.exit(1);
+				}
 			}
 		}
-		allModels = MapUtil.sortByValue(allModels);
+		
+		allModels = Util.sortMapByValue(allModels);
+	}
+	
+
+	public void listToFile() {
 		ListIterator<String> iterator = new ArrayList<String>(allModels.keySet()).listIterator(allModels.size());
-		PrintWriter writer = new PrintWriter(FILENAME + ".txt", "UTF-8");	    
+		PrintWriter writer = null;
+		
+		try {
+			writer = new PrintWriter(inputFileName.substring(0, inputFileName.length() - 4) + "txt", "UTF-8");
+		}
+		catch(Exception e) {
+			e.printStackTrace(System.out);
+			System.exit(1);
+		}
+		
 		while (iterator.hasPrevious()) {
 			String key = iterator.previous();
 			writer.println(key);
 		}
 		writer.close();
+	}	
+}
+
+
+public class TryAllFeatures {
+	static final String FILENAME = "../dataset-10-JSI_sigfox_20161124.arff";
+	static final String OUTFILENAME = "../output";
+	static final List<String> UNWANTEDATTRIBUTES = 
+		Arrays.asList("prr", "seq", "received", "attenuator", "link_num", "experiment_num", "pga_gain");
+
+
+	public static void main(String[] args) throws Exception {
+		WekaClassificationModelBuilder wmb = new WekaClassificationModelBuilder(FILENAME, OUTFILENAME, UNWANTEDATTRIBUTES);
+
+		wmb.buildAllModels(true, new J48(), 10);
+		wmb.listToFile();
 	}
 }
-/*
-
-J48 pruned tree
-------------------
-
-attenuator <= -30
-|   snr_std <= 1.369551
-|   |   snr_std <= 1.197226
-*/
