@@ -1,3 +1,7 @@
+/*
+	This file contains a class for bulding WEKA classification models and a sample usage.
+*/
+
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.Instances;
 import weka.classifiers.Classifier;
@@ -28,8 +32,17 @@ import java.util.ListIterator;
 import java.io.PrintWriter;
 
 
+/**
+ * Class with some basic helper methods.
+ */
 class Util {
 	
+	/**
+	 * Sorts a map by values.
+	 *
+	 * @param	map	the map to be sorted
+	 * @return		sorted map
+	 */
 	public static <K,V extends Comparable<? super V>> Map<K,V> sortMapByValue(Map<K,V> map) {
 		List<Map.Entry<K,V>> list = new LinkedList<Map.Entry<K,V>>(map.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<K,V>>() {
@@ -45,6 +58,12 @@ class Util {
 		return result;
 	}
 
+	/**
+	 * Calculates a power set.
+	 *
+	 * @param	originalSet	the input set
+	 * @return				power set of the specified original set
+	 */
 	public static Set<Set<Integer>> powerSet(Set<Integer> originalSet) {
 		Set<Set<Integer>> sets = new HashSet<Set<Integer>>();
 		if (originalSet.isEmpty()) {
@@ -64,6 +83,12 @@ class Util {
 		return sets;
 	}
 
+	/**
+	 * Converts a set of integers to an array
+	 *
+	 * @param	set the input set
+	 * @return		converted array
+	 */
 	public static int[] convertSetToArray(Set<Integer> set) {
 		int[] retArray = new int[set.size()];
 		int index = 0;
@@ -74,7 +99,9 @@ class Util {
 	}
 }
 
-
+/**
+ * Class for building WEKA classification models with all combinations of features.
+ */
 class WekaClassificationModelBuilder {
 
 	String inputFileName;
@@ -99,7 +126,13 @@ class WekaClassificationModelBuilder {
 	Integer numberOfUnwantedAttributesBeforeClass;
 	List<String> unwantedAttributes;
 	
-
+	/**
+	 * Constructor.
+	 *
+	 * @param	inputFileName		path to input .arff file
+	 * @param	outputDirectory		path to which model files should be output
+	 * @param	unwantedAttributes 	names of attributes that should be removed before building models
+	 */
 	WekaClassificationModelBuilder(String inputFileName, String outputDirectory, List<String> unwantedAttributes) {
 		
 		this.inputFileName = inputFileName;
@@ -131,7 +164,9 @@ class WekaClassificationModelBuilder {
 		setClassAndUnwanted();
 	}
 
-
+	/**
+	 * Finds index of 'class' attribute and indices of unwanted attributes and sets the appropriate filters.
+	 */
 	private void setClassAndUnwanted() {
 		
 		for(int attributeIndex = 0; attributeIndex < numberOfAttributes; attributeIndex++) {
@@ -157,7 +192,7 @@ class WekaClassificationModelBuilder {
 		
 		data.setClassIndex(classIndex - 1);
 		
-		sortLabels.setAttributeIndices(Integer.toString(classIndex));		
+		sortLabels.setAttributeIndices(Integer.toString(classIndex));
 		removeUnwanted.setAttributeIndices(unwantedAttributesArgument);
 		
 		try {
@@ -171,28 +206,35 @@ class WekaClassificationModelBuilder {
 		}
 	}
 	
-
+	/**
+	 * Builds all possible models.
+	 *
+	 * @param	outputToFile 	sets whether to output all models to files
+	 * @param	cls				instance of Classifier
+	 * @param	folds			number of folds to use for cross-validation
+	 */
 	public void buildAllModels(boolean outputToFile, Classifier cls, int folds) throws Exception {
 		
 		allModels = new HashMap<String,Double>();
 		String topTreeFeature = "N/A";
 		boolean isTree = false;
 
+		// Check whether we're building a tree classifier.
 		if(J48.class.isInstance(cls)) {
 			isTree = true;
 		}
 		
-		// calculate all possible combinations of features (removal)
+		// Calculate the new class index (after unwanted attributes are removed).
+		int correctedClassIndex = classIndex - (numberOfUnwantedAttributesBeforeClass + 1);
+		int maxSize = data.numAttributes() - numberOfUnwantedAttributes - 1;
+
+		// Calculate all possible combinations of feature indices (for removal) and loop over them.
 		IntStream.range(0, numberOfAttributes - numberOfUnwantedAttributes).forEach(n -> {
 			attributeIndices.add(n);
 		});
-		
-		// incorrect, attributes can also be after the class
-		int correctedClassIndex = classIndex - (numberOfUnwantedAttributesBeforeClass + 1);
-		int maxSize = data.numAttributes() - numberOfUnwantedAttributes - 1;
-		
 		for(Set<Integer> option: Util.powerSet(attributeIndices)) {
 
+			// Ignore the option if it contains the class index.
 			if(option.contains(correctedClassIndex) || option.size() >= maxSize) {
 				continue;
 			}
@@ -200,8 +242,8 @@ class WekaClassificationModelBuilder {
 			data = source.getDataSet();
 			data.setClassIndex(classIndex - 1);
 
-			// sort class names, remove unwanted attributes
-			// remove attributes
+			// Sort class labels, remove unwanted attributes.
+			// If not empty, remove the attributes contained in current option.
 			if(!option.isEmpty()) {
 				filters = new Filter[3];
 				removeOption.setAttributeIndicesArray(Util.convertSetToArray(option));
@@ -216,9 +258,8 @@ class WekaClassificationModelBuilder {
 			multiFilter.setInputFormat(data);
 			data = Filter.useFilter(data, multiFilter);
 			
-			// print used attributes
+			// Get names of used attributes.
 			String usedAttributes = "";
-
 			for(int attributeIndex = 0; attributeIndex < data.numAttributes(); attributeIndex++) {
 				attribute = data.attribute(attributeIndex);
 				if(attribute.name().equals("class")) {
@@ -228,9 +269,10 @@ class WekaClassificationModelBuilder {
 			}
 			System.out.println("Used attrs: " + usedAttributes);
 
+			// Build the classifier on current data.
 			cls.buildClassifier(data);
 			
-
+			// If the classifier is a tree, find the root node.
 			if(isTree) {
 				String[] topTreeSplit = ((J48)cls).prefix().split(System.getProperty("line.separator"))[0].split(":");
 				if(topTreeSplit.length > 1 && topTreeSplit[0].length() > 0)
@@ -241,7 +283,7 @@ class WekaClassificationModelBuilder {
 				System.out.println("Top of the tree: " + topTreeFeature);
 			}
 			
-
+			// Evaluate the model.
 			Evaluation eval = new Evaluation(data);
 			eval.crossValidateModel(cls, data, folds, rand);
 			
@@ -249,11 +291,12 @@ class WekaClassificationModelBuilder {
 			String summary = eval.toSummaryString();
 			Double correctlyClassified = eval.pctCorrect();
 
-
+			// Add the current model to a map
 			String key = "Used: " + usedAttributes + "\nTop of the tree: " + topTreeFeature + "\nCorrectly classified: " +
 				correctlyClassified + "%\n" + confusionMatrix + "\n-------------------------------------------------------\n\n";
 			allModels.put(key, correctlyClassified);
 			
+			// Output the current model to a file.
 			if(outputToFile) {
 				try {
 					PrintWriter writer = new PrintWriter("../output/" + usedAttributes + ".txt", "UTF-8");
@@ -272,7 +315,9 @@ class WekaClassificationModelBuilder {
 		allModels = Util.sortMapByValue(allModels);
 	}
 	
-
+	/**
+	 * Prints a summary of all (ordered) models to a file.
+	 */
 	public void listToFile() {
 		ListIterator<String> iterator = new ArrayList<String>(allModels.keySet()).listIterator(allModels.size());
 		PrintWriter writer = null;
@@ -293,14 +338,18 @@ class WekaClassificationModelBuilder {
 	}	
 }
 
-
+/**
+ * Test class for running WEKAClassificationModelBuilder.
+ */
 public class TryAllFeatures {
 	static final String FILENAME = "../dataset-10-JSI_sigfox_20161124.arff";
 	static final String OUTFILENAME = "../output";
 	static final List<String> UNWANTEDATTRIBUTES = 
 		Arrays.asList("prr", "seq", "received", "attenuator", "link_num", "experiment_num", "pga_gain");
 
-
+	/**
+	 * Main method for testing WekaClassificationModelBuilder.
+	 */
 	public static void main(String[] args) throws Exception {
 		WekaClassificationModelBuilder wmb = new WekaClassificationModelBuilder(FILENAME, OUTFILENAME, UNWANTEDATTRIBUTES);
 
