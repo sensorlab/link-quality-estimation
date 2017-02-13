@@ -65,7 +65,7 @@ class Estimator:
 if __name__ == "__main__":
     est1 = Estimator(packets_per_window = 2, alpha = 0.6)
 
-    file = open('/home/ijs/Desktop/eWINE_Paris_SC2_RSSI/Trace_1/data/dbm0/Results_node1-2_DailyTest_Sat-Oct-15-04_46_38-2005/sdec1-4', 'r')
+    file = open('../datasets/trace1_Rutgers/data/dbm0/Results_node1-2_DailyTest_Sat-Oct-15-04_46_38-2005/sdec1-4', 'r')
     for line in file:
         seqno, _ = line.split(" ")
         est1.receive_message(int(seqno))

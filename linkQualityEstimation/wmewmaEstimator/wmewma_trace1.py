@@ -87,8 +87,8 @@ class Estimator:
 
 if __name__ == "__main__":
     est1 = Estimator(min_data_frequency = 150, estimate_to_data_ratio = 20)
-    PATH = "/home/ijs/Desktop/eWINE_Paris_SC2_RSSI/Trace_1/data/"
-    PATH_TO_OUTPUT = "/home/ijs/Desktop/eWINE_Paris_SC2_RSSI/Trace_1/output/"
+    PATH = "../datasets/trace1_Rutgers/data"
+    PATH_TO_OUTPUT = "./output/"
     for root, dirs, files in os.walk(PATH):
         for file in files:
             if file.endswith(""):
