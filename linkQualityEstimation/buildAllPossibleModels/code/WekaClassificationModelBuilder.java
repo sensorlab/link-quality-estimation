@@ -1,5 +1,5 @@
 /*
-	This file contains a class for bulding WEKA classification models and a sample usage.
+	This file contains a class for bulding WEKA classification models.
 */
 
 import weka.core.converters.ConverterUtils.DataSource;
@@ -102,7 +102,7 @@ class Util {
 /**
  * Class for building WEKA classification models with all combinations of features.
  */
-class WekaClassificationModelBuilder {
+public class WekaClassificationModelBuilder {
 
 	String inputFileName;
 	String outputDirectory;
@@ -336,24 +336,4 @@ class WekaClassificationModelBuilder {
 		}
 		writer.close();
 	}	
-}
-
-/**
- * Test class for running WEKAClassificationModelBuilder.
- */
-public class TryAllFeatures {
-	static final String FILENAME = "../dataset-10-JSI_sigfox_20161124.arff";
-	static final String OUTFILENAME = "../output";
-	static final List<String> UNWANTEDATTRIBUTES = 
-		Arrays.asList("prr", "seq", "received", "attenuator", "link_num", "experiment_num", "pga_gain");
-
-	/**
-	 * Main method for testing WekaClassificationModelBuilder.
-	 */
-	public static void main(String[] args) throws Exception {
-		WekaClassificationModelBuilder wmb = new WekaClassificationModelBuilder(FILENAME, OUTFILENAME, UNWANTEDATTRIBUTES);
-
-		wmb.buildAllModels(true, new J48(), 10);
-		wmb.listToFile();
-	}
 }
