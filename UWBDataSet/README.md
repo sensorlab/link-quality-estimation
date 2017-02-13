@@ -55,7 +55,7 @@ To import data set data into Python environment, **uwb_dataset.py** script from 
 	import uwb_dataset
 	
 	# import raw data
-	data = import_from_files()
+	data = uwb_dataset.import_from_files()
 	
 	# divide CIR by RX preable count (get CIR of single preamble pulse)
 	# item[2] represents number of acquired preamble symbols
