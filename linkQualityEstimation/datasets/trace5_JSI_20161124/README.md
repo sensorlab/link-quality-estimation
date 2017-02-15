@@ -21,7 +21,7 @@ In this dataset, the frequency of packet transmission was left to be defined by 
 
 ## Dataset description
 
-[Full dataset description](./data/README.md) can be found in *data* directory.
+[Full dataset description](../../../SIGFOXDataSet/20161124/README.md) can be found in *data* directory.
 
 ### Directory structure
 
