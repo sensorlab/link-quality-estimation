@@ -10,7 +10,7 @@ MAC layer was as implemented in libIJS_SIGFOX_LIB_V1.8.7.a.
 
 ## Dataset description
 
-Full dataset description can be found in *data* directory.
+[Full dataset description](./data/README) can be found in *data* directory.
 ### Directory structure
 
 <dl>
