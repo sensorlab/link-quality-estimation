@@ -37,14 +37,8 @@ sudo apt-get install python
 
 One may install the Python packages in the following manner:
 
-1. Install pip:
-```shell
-sudo apt-get install python-pip
-```
-2. Install the packages:
-```shell
-pip install numpy natsort
-```
+1. Install pip: `sudo apt-get install python-pip`
+2. Install the packages: `pip install numpy natsort`
 
 
 ### Usage
@@ -87,4 +81,5 @@ Output file is in *Attribute-Relation File Format* (ARFF), which is specified [h
 
 #### Sample use case
 
-<a href="./use_case.png"><img src="./use_case.png" width="48"></a>
+
+![Use case](./use_case.png)
