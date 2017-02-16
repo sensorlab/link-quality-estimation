@@ -20,6 +20,6 @@ Code samples and datasets that are related to link quality estimation.
 
 ### Conventional work flow
 
-1. Transform dataset to a common format used by the feature generator (use dataset-specific scripts).
+1. Transform a dataset to a common format used by the feature generator (use dataset-specific scripts).
 2. Use *featureGenerator* to generate features and transform the dataset to the common format used by Weka.
 3. Build models with *wekaClassificationModelBuilder*.
