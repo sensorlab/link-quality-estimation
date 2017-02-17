@@ -10,6 +10,7 @@ All scripts require Pyton 2.7, some scripts also require the following Python pa
 * natsort (*transform.py*)
 * Matplotlib (*statistics.py*)
 * pandas (*statistics.py*, *transform.py*)
+* sklearn (*statistics.py*)
 
 One way of installing Python 2.7:
 
