@@ -8,7 +8,7 @@ import sys
 import pandas as pd
 
 PATH_TO_DATA = "../data/"
-PATH_TO_OUTPUT = "../../../featureGenerator/datasets/dataset-10-JSI_sigfox_20161124/"
+PATH_TO_OUTPUT = "../../../featureGenerator/datasets/dataset-5-JSI_sigfox_20161124/"
 TX_ATTRIBUTES =  ["timestamp", "attenuator", "pga_gain"]
 RX_ATTRIBUTES = ["rssi", "snr", "avgSnr"]
 NUMBER_PACKETS = 100

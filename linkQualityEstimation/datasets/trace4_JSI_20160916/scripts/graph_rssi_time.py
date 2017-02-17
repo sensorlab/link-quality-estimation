@@ -1,21 +1,17 @@
 import os
-import numpy as np
-import pandas as pd
-from natsort import natsorted
 import json
 import matplotlib.pyplot as plt
 
 
-PATH_TO_DATA = "/home/ijs/Desktop/eWINE_JSI_sigfox/data/"
-PATH_TO_OUTPUT = "/home/ijs/Desktop/eWINE_JSI_sigfox/output/"
+PATH_TO_DATA = "../data/"
 
 for root, _, files in os.walk(PATH_TO_DATA):
 	for file in files:
-		if not file.endswith(".json"):
+		if not file.endswith(".json") or not "sfxlib" in file:
 			continue
 
+		# Get RSSI of every packet
 		rssi_array = []
-		received = []
 		print(file)
 		f = open(PATH_TO_DATA + file, "r")
 		messages = json.loads(f.read())
@@ -23,14 +19,12 @@ for root, _, files in os.walk(PATH_TO_DATA):
 			if "rx" in message.keys():
 				rssi = message["rx"]["rssi"]
 				rssi_array.append(float(rssi))
-				received.append(1)
-			else:
-				received.append(0)
+
 		f.close()
 
+		# Plot RSSI of all packets for one link
 		plt.plot(range(len(rssi_array)), rssi_array, ".")
-		#plt.ylim(ymin=0)
 		plt.ylabel('RSSI')
 		plt.xlabel('Packet number')
-		#plt.title(file)
+		plt.title(file)
 		plt.show()

@@ -4,7 +4,7 @@ Scripts for data transformation and generation of data statistics.
 
 ## Prerequisites
 
-All scripts require Pyton 2.7, some scripts also require the following Python packages:
+All scripts require Python 2.7, some scripts also require the following Python packages:
 
 * NumPy (*statistics.py*, *transform.py*)
 * natsort (*transform.py*)
@@ -40,7 +40,7 @@ Descriptions of all scripts in this directory.
 
 #### statistics.py
 
-This script calculates PRR and five number summary of RSSI values for each link. The script also illustrates PRR vs transmission gain, RSSI vs transmission gain and RSSI vs PRR.
+This script calculates PRR and a five number summary of RSSI values for each link. The script also illustrates PRR vs transmission gain, RSSI vs transmission gain and RSSI vs PRR.
 
 #### transform.py
 
