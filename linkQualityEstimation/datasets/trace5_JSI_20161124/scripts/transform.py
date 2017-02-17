@@ -8,22 +8,25 @@ import sys
 import pandas as pd
 
 PATH_TO_DATA = "../data/"
-PATH_TO_OUTPUT = "../data_feature_gen/"
+PATH_TO_OUTPUT = "../../../featureGenerator/datasets/dataset-10-JSI_sigfox_20161124/"
 TX_ATTRIBUTES =  ["timestamp", "attenuator", "pga_gain"]
 RX_ATTRIBUTES = ["rssi", "snr", "avgSnr"]
 NUMBER_PACKETS = 100
+
+num_experiment = 0
 
 for root, _, files in os.walk(PATH_TO_DATA):    
     for file in natsorted(files):
         if not file.endswith(".json"):
             continue
-        
+        num_experiment += 1
         print(file)
         
-        directory = PATH_TO_OUTPUT + "experiment-1-" + file.replace(".json", "")
+        directory = PATH_TO_OUTPUT + "experiment-" + str(num_experiment) + "-" + file.replace(".json", "")
         if not os.path.exists(directory):
             os.makedirs(directory)
         
+        # Parse the data
         f = open(os.path.join(root, file), "r")
         
         data = json.loads(f.read())
@@ -37,8 +40,10 @@ for root, _, files in os.walk(PATH_TO_DATA):
         previous_value = {}
         values = {}
 
+        # Create a file for every link
         for link_id, packets in packets_per_link.items():
             
+            # Initialize variables used for interpolation
             for attribute in TX_ATTRIBUTES + RX_ATTRIBUTES:
                 if attribute in RX_ATTRIBUTES:
                     min_value[attribute] = min([float(packet['rx'][attribute]) for packet in packets if 'rx' in packet])
@@ -56,6 +61,7 @@ for root, _, files in os.walk(PATH_TO_DATA):
                     received.append(True)
 
                     if gap > 0:
+                        # Interpolate
                         for attribute in RX_ATTRIBUTES:
                             avg_value = np.mean((previous_value[attribute], float(rx[attribute])))
                             std_value = np.std((previous_value[attribute], float(rx[attribute])))
@@ -74,6 +80,7 @@ for root, _, files in os.walk(PATH_TO_DATA):
                     values[attribute].append(float(tx[attribute]))
 
             if gap > 0:
+                # Interpolate
                 for attribute in RX_ATTRIBUTES:
                     avg_value = np.mean((previous_value[attribute], min_value[attribute]))
                     std_value = np.std((previous_value[attribute], min_value[attribute]))
@@ -81,11 +88,13 @@ for root, _, files in os.walk(PATH_TO_DATA):
                     
                     values[attribute].extend(np.random.normal(avg_value, std_value, size=gap))
 
-            file_out_name = directory + "/trans-0-recv-1-location-" + str(link_id[0]) + "-pga_gain-" +  str(link_id[1]) + ".csv"
+            file_out_name = directory + "/trans-0-recv-1-location-" + str(link_id[0]) + "-pga_gain-" + \
+            str(link_id[1]) + ".csv"
             
             values['received'] = received
             values['seq'] = range(NUMBER_PACKETS)
             
+            # Print to file
             data_frame = pd.DataFrame(values)
             columns = sorted(values)
             data_frame = data_frame[columns]

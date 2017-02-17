@@ -11,6 +11,7 @@ All scripts require Pyton 2.7, some scripts also require the following Python pa
 * Matplotlib (*statistics.py*)
 * pandas (*statistics.py*, *transform.py*)
 * sklearn (*statistics.py*)
+* SciPy (*statistics.py*)
 
 One way of installing Python 2.7:
 
@@ -21,7 +22,7 @@ sudo apt-get install python
 One may install the Python packages in the following manner:
 
 1. Install pip: `sudo apt-get install python-pip`
-2. Install the packages: `pip install numpy natsort matplotlib pandas`
+2. Install the packages: `pip install numpy natsort matplotlib pandas sklearn scipy`
 
 ## Usage
 
@@ -43,4 +44,4 @@ This script calculates PRR and five number summary of RSSI values for each link.
 
 #### transform.py
 
-This script transforms the data to a common format used by the Feature generator. The data is output to the Feature generator's *datasets* directory.
+This script transforms the data to a common format used by the Feature generator. We use interpolation to calculate missing values for lost packets. The data is output to the Feature generator's *datasets* directory.
