@@ -59,21 +59,22 @@ All of our [datasets](../datasets) include a script that can be used for transfo
 ###### Specification of the common format
 Directory structure:
 
-> * Each **dataset directory** must be named in the following way: *dataset-datasetnumber-dataset_description*, e.g. *dataset-0-jsi_sigfox_test*. Each dataset must have a unique number (which must be sequential), words in dataset description must be separated by an underscore. No special characters are permitted, all letters are lowercase.
-> * In dataset directory, there are one or more **experiment directories**. Experiment is a distinct set of links, that have some common characteristic, e.g. same transmission power. Experiment directories are named in the following manner: *experiment-experimentnumber-experiment_description*, e.g. *experiment-0-sfxlib_norep_randfreq*.  Each experiment must have a unique number (which must be sequential), numbers must start at 0, words in experiment description must be separated by an underscore. No special characters are permitted, all letters are lowercase.
-> * In experiment directory, there are one or more **link files**. They are named in the following manner: *trans-transmitternumber-recv-receivernumber.csv*, e.g. *trans-0-recv-1.csv*.
+> * Each **dataset directory** must be named in the following way: *dataset-datasetnumber-dataset_description*, e.g. *dataset-0-jsi_sigfox_test*. Each dataset must have a unique number, words in dataset description must be separated by an underscore. No special characters are permitted, all letters are lowercase.
+> * In dataset directory, there are one or more **experiment directories**. Experiment is a distinct set of links, that have some common characteristic, e.g. same transmission power. Experiment directories are named in the following manner: *experiment-experimentnumber-experiment_description*, e.g. *experiment-0-sfxlib_norep_randfreq*.  Each experiment must have a unique number, words in experiment description must be separated by an underscore. No special characters are permitted, all letters are lowercase.
+> * In experiment directory, there are one or more **link files**. They are named in the following manner: *trans-transmitternumber-recv-receivernumber.csv*, e.g. *trans-0-recv-1.csv*. Additional arbitrary information may also be provided as long as the regulatory part of the naming stays intact, each part of the information must be separated by a dash (-). Additional information must come after the regulatory part and before the filename extension, e.g. *trans-0-recv-1-location-0-pga_gain-0.csv*.
 
 Link file structure:
 
 > Link files are regular csv files with a header line. Position of attribute names in header can be arbitrary, although it's desirable that names of the attributes comply to the following list:
 ```
-Sequence number ---------- seq
-RSSI --------------------- rssi
-SNR ---------------------- snr
-Timestamp ---------------- timestamp
-Transmission power gain -- gain
+Sequence number ---------- seq (integer/float)
+RSSI --------------------- rssi (integer/float)
+SNR ---------------------- snr (integer/float)
+Timestamp ---------------- timestamp (integer/float)
+Transmission power gain -- gain (integer/float)
+Packet received ---------- received (boolean, true|false)
 ```
-> If a new attribute name must be introduced, snake case (lowercase with underscores) is prefered.
+> Sequence number of the first packet that should've been received must be 0. When using interpolation for calculation of missing values for lost packets, *received* column must be included. If a new attribute name must be introduced, snake case (lowercase with underscores) is prefered.
 
 #### Output file format
 
