@@ -5,9 +5,8 @@ import matplotlib.mlab as mlab
 import pandas as pd
 import multiprocessing
 
-PATH = "/home/ado/Desktop/eWINE_Paris_SC2_RSSI/traces/Trace_2"
-PATH_DATA = PATH + "/data/"
-PATH_FIGURE = PATH + "/figures/perLink/"
+PATH_DATA = "../data/"
+PATH_TO_FIGURE = "../figures/perLink/"
 NUMBER_OF_PACKETS = 500
 POWER = range(10, 21)   # range 10 to 20
 MONITOR = range(1, 6)  # 5 monitors
@@ -101,7 +100,7 @@ for root, dirs, files in os.walk(PATH_DATA):
                     # Filter empty records
                     NODES = DATA[pwr, mnt]
                     if len(NODES) >= 1:
-                        pathToFig = PATH_FIGURE + directory + "/" + str(pwr) + "/" + str(mnt)
+                        pathToFig = PATH_TO_FIGURE + directory + "/" + str(pwr) + "/" + str(mnt)
                         if not os.path.exists(pathToFig):
                             os.makedirs(pathToFig)
                             os.makedirs(pathToFig + "/time")

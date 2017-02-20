@@ -3,10 +3,9 @@ import sys
 from matplotlib import pyplot as plt
 import matplotlib.mlab as mlab
 import pandas as pd
+PATH_DATA = "../data/"
+PATH_TO_FIGURE = "../figures/perMonitor/"
 
-PATH = "/home/ado/Desktop/eWINE_Paris_SC2_RSSI/traces/Trace_2"
-PATH_DATA = PATH + "/data/"
-PATH_FIGURE = PATH + "/figures/perMonitor/"
 NUMBER_OF_PACKETS = 500
 POWER = range(10, 21)   # range 10 to 20
 MONITOR = range(1, 6)  # 5 monitors
@@ -35,8 +34,8 @@ for root, dirs, files in os.walk(PATH_DATA):
         if file.endswith(".txt"):
             directory = file.strip(".txt")
             print file
-            if not os.path.exists(PATH_FIGURE + directory):
-                os.makedirs(PATH_FIGURE + directory)
+            if not os.path.exists(PATH_TO_FIGURE + directory):
+                os.makedirs(PATH_TO_FIGURE + directory)
             print directory
             file = open(os.path.join(root, file), 'r')
             for line in file:
@@ -71,13 +70,13 @@ for root, dirs, files in os.walk(PATH_DATA):
                         plt.ylabel('Normalized frequency of RSSI values')
                         plt.title("Monitor %s (Power level %s)" % (mnt, pwr))
                         # plt.show()
-                        plt.savefig(PATH_FIGURE + directory + "/" + fileName + '.png')
+                        plt.savefig(PATH_TO_FIGURE + directory + "/" + fileName + '.png')
                         plt.close()
                         # Calculate five numbers summary and store in a file
                         # print "---------------------"
                         # print "Monitor %s (Power level %s)" % (mnt, pwr)
                         # print fiveNumSummary.describe()
-                        file = open(PATH_FIGURE + directory + "/" + fileName + ".txt", "w")
+                        file = open(PATH_TO_FIGURE + directory + "/" + fileName + ".txt", "w")
                         file.write(str(fiveNumSummary.describe()))
                         file.close()
         print root

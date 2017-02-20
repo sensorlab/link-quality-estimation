@@ -1,21 +1,22 @@
 import os
 import sys
-from matplotlib import pyplot as plt
-import matplotlib.mlab as mlab
+from shutil import rmtree
 import pandas as pd
-import multiprocessing
+
 
 PATH_DATA = "../data/"
-PATH_TO_FIGURE = "../figures/perLink/"
+FEATURE_EXTRACTOR_DATASETS = "../../../featureGenerator/datasets/dataset-3-colorado_wifi/"
 NUMBER_OF_PACKETS = 500
 POWER = range(10, 21)   # range 10 to 20
 MONITOR = range(1, 6)  # 5 monitors
 ANTENNA_POSITION = ["up", "down", "left", "right"]
-FILES = {"omni_16dbm": 500, "omni_variable_txpower": 200, "dir_variable_txpower": 200}
-NUMBER_OF_BINS = 60
+FILES = {"omni_16dbm": 500.0, "omni_variable_txpower": 200.0, "dir_variable_txpower": 200.0}
+NUMBER_OF_BINS = 80
 DATA = {}
 NODES = []
-TIME_GRAPH = False  # Generate time graphs per link
+tmpDir = ""
+numberOfExperiments = 0
+
 
 def initRSSI():
     '''
@@ -33,23 +34,6 @@ def initDatasetPerNode():
     return node
 
 
-def plotTimeGraph(x, y, pathToFig, fileName):
-    plt.cla()
-    plt.plot(x, y, linewidth=0.5)
-    plt.xlabel("Packet sequence number")
-    plt.ylabel('RSSI (dBm)')
-    plt.savefig(pathToFig + "/time/" + fileName + '.png', dpi=700)
-    plt.close()
-
-
-def plotTimeGraphD(x, y, pathToFig, fileName):
-    plt.cla()
-    print "x - value %s" % len(x)
-    print "y value %s" % len(y)
-    if len(x) == 25:
-        print x
-
-
 def progressBar(count, total, suffix=''):
     bar_len = 40
     filled_len = int(round(bar_len * count / float(total)))
@@ -57,6 +41,12 @@ def progressBar(count, total, suffix=''):
     bar = '=' * filled_len + '-' * (bar_len - filled_len)
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', suffix))
     sys.stdout.flush()
+
+
+# Create dataset directory
+if os.path.exists(FEATURE_EXTRACTOR_DATASETS):
+    rmtree(FEATURE_EXTRACTOR_DATASETS)
+os.makedirs(FEATURE_EXTRACTOR_DATASETS)
 
 for root, dirs, files in os.walk(PATH_DATA):
     directory = ""
@@ -99,49 +89,34 @@ for root, dirs, files in os.walk(PATH_DATA):
                     tmpNode = nodeName
                     tmpAntenna = str(data[3])
             file.close()
-            sys.exit(1)
-            # Start plotting and calculating 5 num summary
-            print "Preparing histograms per Monitor and calculating 5 num summary."
-            for pwr in POWER:
 
+            for pwr in POWER:
                 for mnt in MONITOR:
                     # Filter empty records
-                    NODES = sorted(DATA[pwr, mnt])
+                    NODES = DATA[pwr, mnt]
                     if len(NODES) >= 1:
-                        pathToFig = PATH_TO_FIGURE + directory + "/" + str(pwr) + "/" + str(mnt)
-                        if not os.path.exists(pathToFig):
-                            os.makedirs(pathToFig)
-                            os.makedirs(pathToFig + "/time")
                         print "\n"
                         print "Power level %s, monitor %s, links %s" % (pwr, mnt, len(NODES))
-                        for id, node in enumerate(NODES):
+                        for id, node in enumerate(sorted(NODES)):
+                            if tmpDir != directory:
+                                numberOfExperiments += 1
                             progressBar(id, len(NODES) - 1, "Progress")
-                            fileName = "Node_%s_toMonitor_%s_pwr_%s" % (id, mnt, pwr)
                             node = NODES[node]
-                            fiveNumSummary = pd.Series(node['rssi'])
-                            plt.cla()
-                            n, bins, patches = plt.hist(node['rssi'], bins=range(-100, NUMBER_OF_BINS - 100), normed=True, histtype='stepfilled', facecolor='green', alpha=0.5)
-                            # y = mlab.normpdf(bins, fiveNumSummary.mean(), fiveNumSummary.std())
-                            # plt.plot(bins, y, 'r--')
-                            plt.xlabel("RSSI (dBm)")
-                            # plt.xticks(range(0, max(y), 15), rotation=70)
-                            plt.ylabel('Normalized frequency of RSSI values')
-                            plt.title("Monitor %s (Power level %s)" % (mnt, pwr))
-                            # plt.show()
-                            plt.savefig(pathToFig + "/" + fileName + '.png')
-                            plt.close()
-                            x, y = zip(*sorted(zip(node['seq'], node['rssi'])))
-                            plt.figure(figsize=(10, 5))
-                            # Calculate five numbers summary and store in a file
-                            # print "---------------------"
-                            # print "Monitor %s (Power level %s)" % (mnt, pwr)
-                            # print fiveNumSummary.describe()
-                            file = open(pathToFig + "/" + fileName + ".txt", "w")
-                            file.write(str(fiveNumSummary.describe()))
-                            file.close()
-                            if TIME_GRAPH:
-                                plotTimeGraph(x, y, pathToFig, fileName)
+                            experimentPath = FEATURE_EXTRACTOR_DATASETS + "experiment-" + str(numberOfExperiments) + "-" + str(directory)
 
-        print root
-        print "*****************************"
+                            if not os.path.exists(experimentPath):
+                                tmpDir = directory
+                                os.makedirs(experimentPath)
+
+                            # Create csv file per link
+                            # id = node that is transmitting the data
+                            # mnt = monitor that is receiving the data
+                            csvFile = experimentPath + "/trans-" + str(id) + "-recv-" + str(mnt) + "-pwr-" + str(pwr) + ".csv"
+                            x, y = zip(*sorted(zip(node['seq'], node['rssi'])))
+                            df = pd.DataFrame({"seq": x, "rssi": y})
+                            # Keep colum order
+                            df = df[['seq', 'rssi']]
+                            df.to_csv(csvFile, index=False, header=True, cols=['seq', 'rssi'])
+        print "\n"
+        print "*************** DONE **************"
         # sys.exit(1)
