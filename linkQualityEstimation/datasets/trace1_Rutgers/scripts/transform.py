@@ -4,28 +4,21 @@ import pandas as pd
 from shutil import rmtree
 from natsort import natsorted
 import numpy as np
-import sys
 
 PATH = "../data/"
 FEATURE_EXTRACTOR_DATASETS = "../../../featureGenerator/datasets/dataset-2-rutgers_wifi/"
 NUMBER_OF_PACKETS = 300
 RSSI_MAX = 127
 RSSI_MIN = 0
-NUMBER_OF_BINS = 40
-MISSING_DATA_BIN = -1
-WINDOW_SIZE = 30
 
-print "Start per link transformation"
-PRR = []
-RSSI_MEAN = []
-PRR_WINDOW = []
-RSSI_WINDOW = []
-numberOfExperiments = 0
-tmpDir = ""
+number_experiment = 0
+tmp_dir = ""
+
 # Create dataset directory
 if os.path.exists(FEATURE_EXTRACTOR_DATASETS):
     rmtree(FEATURE_EXTRACTOR_DATASETS)
 os.makedirs(FEATURE_EXTRACTOR_DATASETS)
+
 for root, dirs, files in natsorted(os.walk(PATH)):
     root = root.lstrip()
     print root
@@ -37,11 +30,10 @@ for root, dirs, files in natsorted(os.walk(PATH)):
             current_seq = 0
             previous_rssi = RSSI_MIN
             previous_seq = -1
-            missing_values = 0
-            fiveNumSummary = 0
+
             name = dir[1].split("_")
-            fromNode = name[1].replace("-", "_")
-            toNode = str("node" + file[len("sdec"):]).replace("-", "_")
+            from_node = name[1].replace("-", "_")
+            to_node = str("node" + file[len("sdec"):]).replace("-", "_")
             file = open(os.path.join(root, file), 'r')
             for line in file:
                 data = line.split()
@@ -49,6 +41,7 @@ for root, dirs, files in natsorted(os.walk(PATH)):
                     rssi = int(data[1])
                     seq = int(data[0])
                     if seq < NUMBER_OF_PACKETS and rssi <= RSSI_MAX and rssi >= RSSI_MIN:
+                        # Interpolate
                         avg_rssi = np.mean((previous_rssi, rssi))
                         std_rssi = np.std((previous_rssi, rssi))
                         std_rssi = std_rssi if std_rssi > 0 else sys.float_info.min
@@ -62,6 +55,7 @@ for root, dirs, files in natsorted(os.walk(PATH)):
                         z.append("true")
                         previous_seq = seq
                         previous_rssi = rssi
+            # Interpolate
             difference = NUMBER_OF_PACKETS - previous_seq - 1
             avg_rssi = np.mean((previous_rssi, RSSI_MIN))
             std_rssi = np.std((previous_rssi, RSSI_MIN))
@@ -71,23 +65,20 @@ for root, dirs, files in natsorted(os.walk(PATH)):
             z.extend(["false"] * difference)
 
             file.close()
-            #missing_values = (NUMBER_OF_PACKETS - len(y))
-
-            if len(y) > 0:
-                # Create directory path if it is missing
-                if tmpDir != dir[0]:
-                    numberOfExperiments += 1
-
-                experimentPath = FEATURE_EXTRACTOR_DATASETS + "experiment-" + str(numberOfExperiments) + "-noise_level_" + dir[0].replace("-", "_")
-                if not os.path.exists(experimentPath):
-                    tmpDir = dir[0]
-                    os.makedirs(experimentPath)
 
 
-                # Create csv file per link
-                csvFile = experimentPath + "/trans-" + fromNode + "-recv-" + toNode + ".csv"
-                print "trans-" + fromNode + "-recv-" + toNode + ".csv"
-                df = pd.DataFrame({"seq": x, "rssi": y, "received": z})
-                # Keep colum order
-                df = df[['seq', 'rssi', 'received']]
-                df.to_csv(csvFile, index=False, header=True, cols=['seq', 'rssi', 'received'])
+            # Create directory path if it is missing
+            if tmp_dir != dir[0]:
+                number_experiment += 1
+            experiment_path = FEATURE_EXTRACTOR_DATASETS + "experiment-" + str(number_experiment) + "-noise_level_" + dir[0].replace("-", "_")
+            if not os.path.exists(experiment_path):
+                tmp_dir = dir[0]
+                os.makedirs(experiment_path)
+
+            # Create csv file per link
+            csv_file = experiment_path + "/trans-" + from_node + "-recv-" + to_node + ".csv"
+            print "trans-" + from_node + "-recv-" + to_node + ".csv"
+            df = pd.DataFrame({"seq": x, "rssi": y, "received": z})
+            # Keep colum order
+            df = df[['seq', 'rssi', 'received']]
+            df.to_csv(csv_file, index=False, header=True, cols=['seq', 'rssi', 'received'])

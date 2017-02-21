@@ -1,24 +1,22 @@
 import os
-import sys
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy.interpolate import UnivariateSpline
-import matplotlib.mlab as mlab
-import pandas as pd
+
 PATH = "../data/"
-PATH_TO_FIGURE = "../figures/perLink/"
-PATH_TO_NEW_DATASET = "../histogramClustering/"
+PATH_TO_OUTPUT = "../output/clustering/"
 NUMBER_OF_PACKETS = 300.0
 NUMBER_OF_BINS = 40
 RSSI_MAX = 127
 RSSI_MIN = 0
 MISSING_DATA_BIN = -1
 
-
-def createFiles():
-    fileList = ["dbm0.arff", "dbm-5.arff", "dbm-10.arff", "dbm-15.arff", "dbm-20.arff"]
-    for file in fileList:
-        file = open(PATH_TO_NEW_DATASET + file, 'w')
+# Initalize files' content
+def create_files():
+    file_list = ["dbm0.arff", "dbm-5.arff", "dbm-10.arff", "dbm-15.arff", "dbm-20.arff"]
+    if not os.path.exists(PATH_TO_OUTPUT):
+        os.makedirs(PATH_TO_OUTPUT)
+    for file in file_list:
+        file = open(PATH_TO_OUTPUT + file, 'w')
         file.write("@RELATION transmitted\n")
         file.write("@ATTRIBUTE from     string\n")
         file.write("@ATTRIBUTE to     string\n")
@@ -30,52 +28,59 @@ def createFiles():
 
         file.write("@DATA\n")
         file.close()
-count = 0
-createFiles()
+
+count_invalid = 0
+create_files()
 for root, dirs, files in os.walk(PATH):
     x, y = [], []
-    missing_values = 0
-    fiveNumSummary = 0
     root = root.lstrip()
     tmp = root[len(PATH):]
     dir = tmp.split("/")
-    histogramData = open(PATH_TO_NEW_DATASET + dir[0] + '.arff', 'a')
-    print "Transmittion power:", dir[0]
+
+    if dir[0] == "":
+        continue
+    histogram_data = open(PATH_TO_OUTPUT + dir[0] + '.arff', 'a')
+    print "Transmission power:", dir[0]
+
     for file in files:
         tmp_x, tmp_y = [], []
         if file.endswith(""):
+            # Parse data
             name = dir[1].split("_")
-            fromNode = name[1]
-            toNode = str("node" + file[len("sdec"):])
+            from_node = name[1]
+            to_node = str("node" + file[len("sdec"):])
             file = open(os.path.join(root, file), 'r')
             for line in file:
                 data = line.split()
                 if len(data) > 1:
                     if int(data[1]) > RSSI_MAX:
-                        count = count + 1
+                        count_invalid = count_invalid + 1
                     if int(data[1]) <= RSSI_MAX and int(data[1]) >= RSSI_MIN:
                         tmp_x.append(data[0])
                         tmp_y.append(int(data[1]))
 
-            histogramData.write("%s, %s, %s" % (fromNode, toNode, (fromNode + "TO" + toNode)))
-            if len(tmp_y) <=NUMBER_OF_PACKETS:
-                histogramData.write(", %s" % ((len(tmp_y))/NUMBER_OF_PACKETS))
+            # Print data to files
+            histogram_data.write("%s, %s, %s" % (from_node, to_node, (from_node + "TO" + to_node)))
+            if len(tmp_y) <= NUMBER_OF_PACKETS:
+                histogram_data.write(", %s" % ((len(tmp_y)) / NUMBER_OF_PACKETS))
             else:
-                histogramData.write(", 1")
-            histogramData.write(", %s" % (np.sum(tmp_y)/NUMBER_OF_PACKETS))
+                histogram_data.write(", 1")
+            
+            if len(tmp_y) > 0:
+                avg_rssi = np.sum(tmp_y) / (len(tmp_y) * 1.0)
+            else:
+                avg_rssi = "?"
+            histogram_data.write(", %s" % (avg_rssi))
 
-            missing_values = (NUMBER_OF_PACKETS - len(tmp_y))
             tmp_y.extend([-1] * (int(NUMBER_OF_PACKETS) - len(tmp_y)))
             n, bins, patches = plt.hist(tmp_y, bins=range(MISSING_DATA_BIN, NUMBER_OF_BINS + 1), normed=True, facecolor='green', alpha=0.5)
-            for binValue in n:
-                histogramData.write(", %s" % (binValue))
+            for bin_value in n:
+                histogram_data.write(", %s" % (bin_value))
+            histogram_data.write("\n")
 
-            histogramData.write("\n")
-            # plt.show()
             plt.close()
             file.close()
-    histogramData.close()
-    print count
+    
+    histogram_data.close()
 
-
-sys.exit(1)
+print "Number of invalid values: " + str(count_invalid)
