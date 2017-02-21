@@ -16,4 +16,7 @@ Full dataset description can be found [here](https://crawdad.cs.dartmouth.edu/ru
 
   <dt>scripts</dt>
   <dd>Scripts for data transformation and generation of data statistics.</dd>
+
+  <dt>output</dt>
+  <dd>Empty directory to which some scripts output files.</dd>
 </dl>
