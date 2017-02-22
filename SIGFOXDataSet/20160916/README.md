@@ -1,3 +1,5 @@
+# SIGFOX 20160916 packet dataset
+
 This dataset contains results of some tests with sending SIGFOX frames from a
 device to basestation.
 
@@ -53,29 +55,29 @@ number. This sequence number was used to connect the log of transmitted packets
 with basestation reports.
 
 
-Description of individual files:
+## Description of individual files:
 
-sfxlib.json
+ *  `sfxlib.json`
 
 	1000 packets sent using the original protocol defined by SIGFOX_LIB (3
 	repetitions, some proprietary frequency hopping pattern)
 
-sfxlib_norep.json
+ *  `sfxlib_norep.json`
 
 	1000 packets using the original protocol defined by SIGFOX_LIB, except
 	only the first packet repetition was transmitted.
 
-sfxlib_norep_randfreq.json
+ *  `sfxlib_norep_randfreq.json`
 
 	1000 packets using one repetition on a randomly chosen frequency (i.e.
 	overriding the hopping pattern defined by SIGFOX_LIB)
 
-sfxlib_norep_randfreq_randgain.json
+ *  `sfxlib_norep_randfreq_randgain.json`
 
 	5000 packets using one repetition, randomly chosen frequency and
 	randomly chosen baseband gain between -30 and 0 dB.
 
-sfxlib_norep_randfreq_randgain_30att.json
+ *  `sfxlib_norep_randfreq_randgain_30att.json`
 
 	5000 packets using one repetition, randomly chosen frequency and
 	randomly chosen baseband gain between -30 and 0 dB. 30 dB external
@@ -84,7 +86,7 @@ sfxlib_norep_randfreq_randgain_30att.json
 
 The "scripts/" sub-directory contains code that was used to obtain these measurements:
 
-sigfox_loop.json
+ *  `sigfox_loop.json`
 
 	Transmit-receive loop for logging raw packet data, implemented as a
 	node RED flow.
@@ -92,7 +94,21 @@ sigfox_loop.json
 	Note that running this flow requires external software components that
 	are not included in this repository.
 
-process.py
+ *  `process.py`
 
 	Post-processing script that was used to transform raw data into JSON
 	files included in this dataset.
+
+## Contact
+
+For any additional information please contact **tomaz.solc@ijs.si**
+
+## License
+
+Copyright (C) 2017 SensorLab, Jožef Stefan Institute http://sensorlab.ijs.si
+
+The research leading to these results has received funding from the European
+Horizon 2020 Programme project eWINE under grant agreement No. 688116.
+
+Data is available under the Creative Commons Attribution 4.0 International
+(CC BY 4.0) license.
