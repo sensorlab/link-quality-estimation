@@ -1,4 +1,4 @@
-## Dataset - Rutgers University
+# Dataset - Rutgers University
 
 **Traceset of RSSI measurement from the ORBIT testbed.**
 
@@ -16,7 +16,20 @@ Full dataset description can be found [here](https://crawdad.cs.dartmouth.edu/ru
 
   <dt>scripts</dt>
   <dd>Scripts for data transformation and generation of data statistics.</dd>
-
-  <dt>output</dt>
-  <dd>Empty directory to which some scripts output files.</dd>
 </dl>
+
+## Author and license
+
+Scripts for this dataset were written by Adnan Bekan (**adnan.bekan@ijs.si**) and Timotej Gale (**timotej.gale@gmail.com**).
+
+Copyright (C) 2017 SensorLab, Jožef Stefan Institute http://sensorlab.ijs.si
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses
+
+## Acknowledgement
+
+The research leading to these results has received funding from the European Horizon 2020 Programme project eWINE under grant agreement No. 688116.

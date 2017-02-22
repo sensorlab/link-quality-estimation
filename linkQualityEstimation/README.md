@@ -23,3 +23,16 @@ Code samples and datasets that are related to link quality estimation.
 1. Transform a dataset to a common format used by the feature generator (use dataset-specific scripts).
 2. Use *featureGenerator* to generate features and transform the dataset to the common format used by Weka.
 3. Build models with *wekaClassificationModelBuilder*.
+
+### Citation
+If you are using our datasets or scripts in your research, citation of the following paper would be greatly appreciated.
+
+[Kulin, M., Fortuna, C., De Poorter, E., Deschrijver, D., & Moerman, I. (2016). Data-Driven Design of Intelligent Wireless Networks: An Overview and Tutorial. Sensors, 16(6), 790.](http://www.mdpi.com/1424-8220/16/6/790/htm)
+
+### License
+
+See `README.md` files in individual sub-directories for details.
+
+### Acknowledgement
+
+The research leading to these results has received funding from the European Horizon 2020 Programme project eWINE under grant agreement No. 688116.

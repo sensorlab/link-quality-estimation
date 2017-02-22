@@ -1,4 +1,4 @@
-## Dataset - Jožef Stefan Institute (16 September 2016)
+# Dataset - Jožef Stefan Institute (16 September 2016)
 
 **This dataset contains results of some tests with sending SIGFOX frames from a device to basestation.**
 
@@ -23,3 +23,19 @@ MAC layer was as implemented in libIJS_SIGFOX_LIB_V1.8.7.a.
   <dt>figures</dt>
   <dd>Complementary figures to the dataset description.</dd>
 </dl>
+
+## Author and license
+
+Scripts for this dataset were written by Timotej Gale, **timotej.gale@gmail.com**.
+
+Copyright (C) 2017 SensorLab, Jožef Stefan Institute http://sensorlab.ijs.si
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses
+
+## Acknowledgement
+
+The research leading to these results has received funding from the European Horizon 2020 Programme project eWINE under grant agreement No. 688116.

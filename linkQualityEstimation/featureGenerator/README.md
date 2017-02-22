@@ -84,3 +84,19 @@ Output file is in *Attribute-Relation File Format* (ARFF), which is specified [h
 
 
 ![Use case](./use_case.png)
+
+## Author and license
+
+Feature generator was written by Timotej Gale, **timotej.gale@gmail.com**.
+
+Copyright (C) 2017 SensorLab, Jožef Stefan Institute http://sensorlab.ijs.si
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses
+
+## Acknowledgement
+
+The research leading to these results has received funding from the European Horizon 2020 Programme project eWINE under grant agreement No. 688116.
