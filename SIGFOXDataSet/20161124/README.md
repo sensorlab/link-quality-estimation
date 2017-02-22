@@ -88,3 +88,12 @@ basestation.
 Packet payload ("data "property) was used to transmit a sequence
 number. This sequence number was used to connect the log of transmitted packets
 with basestation reports.
+
+## Contact
+
+For any additional information please contact **tomaz.solc@ijs.si**
+
+## License
+
+Data is available under the Creative Commons Attribution 4.0 International 
+(CC BY 4.0) license.
