@@ -15,7 +15,7 @@ Dataset description ca be found [here](http://sing.stanford.edu/cs303-sp11/assig
 
 ## Author and license
 
-Scripts for this dataset were written by Gregor Cerar (**gregor.cerar@ijs.si**).
+Scripts for processing this dataset were written by Gregor Cerar (**gregor.cerar@ijs.si**).
 
 Copyright 2018 SensorLab, Jožef Stefan Institute http://sensorlab.ijs.si
 
