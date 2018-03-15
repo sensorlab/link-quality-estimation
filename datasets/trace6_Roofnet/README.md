@@ -1,6 +1,6 @@
 # Dataset - Roofnet
 
-**Traceset of signa and noise measurements on Roofnet testbed.**
+**Traceset of signal and noise measurements on Roofnet testbed.**
 
 ## Dataset description
 Dataset description ca be found [here](http://sing.stanford.edu/cs303-sp11/assignments/assignment2.html)
