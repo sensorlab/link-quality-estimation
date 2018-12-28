@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 import os
 import glob
@@ -29,6 +29,8 @@ dtypes = {
     'noise': np.uint8,
     'bitrate': np.float32,
 }
+
+columns = dtypes.keys()
 
 
 def process_data():
