@@ -19,7 +19,4 @@ Datasets that are related to WP5 and localization.
 
   <dt>trace5_JSI_20161124</dt>
   <dd>Dataset from Jožef Stefan Institute. This dataset contains results of some tests with sending SIGFOX frames from a device to basestation.</dd>
-
-  <dt>trace6_Roofnet</dt>
-  <dd>Dataset from Computer Science and Artificial Intelligence Laboratory at the Massachusetts Institute of Technology (MIT).</dd>
 </dl>
