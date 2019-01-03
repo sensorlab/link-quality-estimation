@@ -49,7 +49,7 @@ def select_datasets_experiments(dataset_path = DATASET_PATH):
         for dataset_number, dataset_name in sorted(datasets.items()):
             dataset_description = dataset_name.split("-")[-1]
             print(dataset_number + " ... " + dataset_description)
-        number_selected_dataset = raw_input()
+        number_selected_dataset = input()
         selected_datasets.add(number_selected_dataset)
         
         
@@ -57,12 +57,12 @@ def select_datasets_experiments(dataset_path = DATASET_PATH):
         for experiment_number, experiment_name in sorted(experiments[number_selected_dataset].items()):
             experiment_description = experiment_name.split("-")[-1]
             print(experiment_number + " ... " + experiment_description)
-        input_experiments = raw_input()
+        input_experiments = input()
         for input_experiment in input_experiments.split(","):
             selected_experiments[number_selected_dataset].add(input_experiment.strip())
 
         print("Import another dataset/experiment? (y/n)")
-        if not raw_input().upper() == "Y":
+        if not input().upper() == "Y":
             break
     return selected_datasets, selected_experiments
 
@@ -370,31 +370,31 @@ if __name__ == "__main__":
     
     # calculate other features (calculate new attributes, instant RSSI, avg RSSI, std, PRR, ch. memory, ...)
     print("Calculate other features? (y/n)")
-    if raw_input().upper() == "Y":
+    if input().upper() == "Y":
         print("Input the PRR window. Leave blank to ommit.")
-        prr_window = raw_input()
+        prr_window = input()
         prr_window = prr_window if prr_window != "" else None
         
         print("Input for which attributes you would like to calculate average/standard deviation feature in the following format: attr:avg/std:window.")
         print("To calculate more features, separate the inputs by a comma. Transformations will be applied in sequential order. New features are named in the following manner: attr_mode. Leave blank to ommit.")
         # TODO: dynamic possible attributes output
         #print("Available attributes: rssi, snr, prr, ...")
-        avg_std = raw_input()
+        avg_std = input()
         avg_std = avg_std if avg_std != "" else None
 
         print("Enter the number of leading samples to truncate. Leave blank to ommit.")
-        skip_leading = raw_input()
+        skip_leading = input()
         skip_leading = skip_leading if skip_leading != "" else None
 
         '''
         ignore_last_window = False
         print("Input a window for aggregation/subsampling. Leave blank to ommit.")
-        aggr_window = raw_input()
+        aggr_window = input()
         if aggr_window == "":
             aggr_window = None
         else:
             print("Ignore the last window (underflow)? (y/n)")
-            if raw_input().upper() == "Y":
+            if input().upper() == "Y":
                 ignore_last_window = True
         '''
         # normalize 
@@ -404,14 +404,14 @@ if __name__ == "__main__":
     
     # define categories
     print("Define categories? (y/n)")
-    if raw_input().upper() == "Y":
+    if input().upper() == "Y":
         print("Input the default label.")
-        default_label = raw_input()
+        default_label = input()
         if default_label != "":
             print("Input rules for labeling the samples. Rules will be applied in sequential order. Separate the rules with a comma.")
             print('Rules must be in the following format: #label1 $rssi < -50 [and $rssi > 90[,#label2 $attr3 == 10]]')
             print("All tokens must be separated with a space. Attribute names must begin with a $ (dollar) sign.")
-            rules = raw_input()
+            rules = input()
             if rules != "":
                 data = define_categories(data, default_label, rules)
             else:
@@ -426,7 +426,7 @@ if __name__ == "__main__":
     # output to arff files
     print("Input the format of the output files (possible options: [link|experiment|dataset|all].")
     print("WARNING: THIS WILL DELETE ALL CONTENTS OF OUTPUT DIRECTORY!")
-    out_format = raw_input()
+    out_format = input()
     out_format = out_format if out_format != "" else None
     if out_format:
         export_to_file(data, out_format)
