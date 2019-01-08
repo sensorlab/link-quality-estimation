@@ -20,19 +20,19 @@ Full dataset description can be found [here](https://crawdad.cs.dartmouth.edu/ru
     <dl>
       <dt><strong>transform.py</strong></dt>
       <dd>
-        Transforms data from <i>data/</i> directory into flat structured, where missing sequence numbers are added, but no interpolation is performed. The output files reside in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> in a comma-separated values (CSV) form. These CSV files have these listed columns:
+        Transforms traces from <i>data/</i> directory into flat structured, where missing sequence numbers are added, but no interpolation is performed. The output files reside in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> in a comma-separated values (CSV) format. All CSV files contain these six columns with respective data types:
         <ul>
           <li>seq (sequence number) as <i>uint16</i> type</li>
           <li>src (source/transmitter node) as <i>string</i> type</li>
           <li>dst (destination/receiver node) as <i>string</i> type</li>
           <li>noise (artificial noise level) as <i>int8</i> type</li>
           <li>received (packet reception) as <i>boolean</i> type</li>
-          <li>rssi (Reception Signal Strength Indicator) as <i>float</i> type</li>
+          <li>rssi (Reception Signal Strength Indicator) as <i>float32</i> type</li>
         </ul>
       </dd>
       <dt><strong>interpolation.py</strong></dt>
       <dd>
-        It applies desired interpolation onto each CSV file in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> on *rssi* column. Run script with `-h` or `--help` parameter for further instructions.
+        It applies desired interpolation onto each CSV file in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> on <strong>rssi</strong> column. Run script with `-h` or `--help` parameter for further instructions.
       </dd>
       <dt>
         <strong>
