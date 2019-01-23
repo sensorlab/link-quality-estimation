@@ -20,7 +20,6 @@ def guassian_interpolation() -> None:
         link = pd.read_csv(filepath)
 
         # Maybe some other interpolation was already applied. Clear it.
-
         link.loc[link.received == False, 'rssi'] = np.NaN
 
         # Replace invalid values with interpolation
