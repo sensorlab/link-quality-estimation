@@ -1,49 +1,27 @@
-import sys, os
-from os import path, makedirs
-
-"""
-Because of intentional limitation of the Python, dependencies can be imported
-from parent directory, but not from parent of parent, unless it is in sys.path.
-"""
-from transform import OUTPUT_DIR, ensure_dir, PROJECT_ROOT
-
-if PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, PROJECT_ROOT)
-
-directory = path.join(PROJECT_ROOT, 'pyModelBuilder')
-if directory not in sys.path:
-    sys.path.insert(0, directory)
-
-directory = path.join(PROJECT_ROOT, 'pyModelBuilder', 'scripts')
-if directory not in sys.path:
-    sys.path.insert(0, directory)
-
-
-from pyModelBuilder.scripts.tools import interpolate_with_gaussian_noise
-
-
-from glob import glob
-import multiprocessing as mp
-from os import mkdir, path
-from typing import List
 import argparse
+import glob
+from os import path
 
 import numpy as np
 import pandas as pd
 
+from datasets.helpers import interpolate_with_gaussian_noise
+from datasets.trace1_Rutgers import TRANSFORM_OUTPUT_PATH
 
 SUPPORTED_METHODS = ['constant', 'gaussian']
 
 
-def guassian_interpolation():
+def guassian_interpolation() -> None:
     print(f'Applying "Gaussian" interpolation')
-    filepaths = glob(path.join(OUTPUT_DIR, '**', '*.csv'), recursive=True)
+    filepaths = glob.iglob(
+        path.join(TRANSFORM_OUTPUT_PATH, '**', '*.csv'), recursive=True)
 
     for filepath in filepaths:
         link = pd.read_csv(filepath)
 
         # Maybe some other interpolation was already applied. Clear it.
-        link['rssi'] = link['rssi'].where(link.received)
+
+        link.loc[link.received == False, 'rssi'] = np.NaN
 
         # Replace invalid values with interpolation
         link['rssi'] = interpolate_with_gaussian_noise(link.rssi)
@@ -52,19 +30,18 @@ def guassian_interpolation():
     print(f'Processed {len(filepaths)} file(s)')
 
 
-def constant_interpolation(const: int):
+def constant_interpolation(const: int) -> None:
     print(f'Applying interpolation with constant {const}')
-    filepaths = glob(path.join(OUTPUT_DIR, '**', '*.csv'), recursive=True)
-
+    filepaths = glob.iglob(
+        path.join(TRANSFORM_OUTPUT_PATH, '**', '*.csv'), recursive=True)
 
     for filepath in filepaths:
         link = pd.read_csv(filepath)
 
-        # Maybe some other interpolation was already applied. Clear it.
-        link.rssi = link.rssi.where(link.received)
-
         # Replace invalid values with interpolation
-        link.rssi = link.rssi.replace([np.inf, -np.inf, np.nan], const)
+        link.loc[link.received == False, 'rssi'] = const
+
+        # Save back to CSV
         link.to_csv(filepath, index=False)
 
     print(f'Processed {len(filepaths)} file(s)')
@@ -93,7 +70,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print(OUTPUT_DIR)
+    print('Changes applied to:', TRANSFORM_OUTPUT_PATH)
 
     if args.method == 'constant':
         constant_interpolation(args.constant)
