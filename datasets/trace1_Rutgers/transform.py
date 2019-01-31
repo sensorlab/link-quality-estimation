@@ -44,7 +44,7 @@ def parser(filename: str) -> pd.DataFrame:
 
             assert len(row) == 2, f'Expected row length 2, got {len(row)}'
 
-            seq, _rssi_ = np.uint8(row[0]), np.uint8(row[1])
+            seq, _rssi_ = int(row[0]), np.uint8(row[1])
 
             # Keep information about received packet
             if seq < 300 and _rssi_ < 128 and _rssi_ >= 0:
