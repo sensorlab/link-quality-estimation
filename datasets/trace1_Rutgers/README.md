@@ -11,46 +11,38 @@ Full dataset description can be found [here](https://crawdad.cs.dartmouth.edu/ru
 ### Directory structure
 
 <dl>
-  <dt>data</dt>
+  <dt><strong>data/</strong></dt>
   <dd>The actual data.</dd>
 
-  <dt>scripts</dt>
+  <dt><strong>transform.py</strong></dt>
   <dd>
-    Scripts for data transformation and generation of data statistics.
-    <dl>
-      <dt><strong>transform.py</strong></dt>
-      <dd>
-        Transforms traces from <i>data/</i> directory into flat structured, where missing sequence numbers are added, but no interpolation is performed. The output files reside in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> in a comma-separated values (CSV) format. All CSV files contain these seven columns with respective data types:
-        <ul>
-          <li>seq (sequence number) as <i>uint16</i> type</li>
-          <li>src (source/transmitter node) as <i>string</i> type</li>
-          <li>dst (destination/receiver node) as <i>string</i> type</li>
-          <li>noise (artificial noise level) as <i>int8</i> type</li>
-          <li>received (packet reception) as <i>boolean</i> type</li>
-          <li>error (error indicator, RSSI == 128) as <i>boolean</i> type</li>
-          <li>rssi (Reception Signal Strength Indicator) as <i>float32</i> type</li>
-        </ul>
-      </dd>
-      <dt><strong>interpolation.py</strong></dt>
-      <dd>
-        By default, `transform.py` preserve information regarding lost packets and missing RSSI values are filled with zeros. This script provides other interpolation methods on each trace CSV file in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> on <strong>rssi</strong> column. Run script with `-h` or `--help` parameter for further instructions.
-      </dd>
-      <dt>
-        <strong>
-          per_link_windows.py<br/>
-          per_link.py<br/>
-          per_transmitter.py<br/>
-          prepare_data_clustering.py
-        </strong>
-      </dt>
-      <dd>These scripts visualize the dataset for visualization of the data.</dd>
-      </dl>
+    Transforms traces from <i>data/</i> directory into flat structured, where missing sequence numbers are added, but no interpolation is performed. The output files reside in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> in a comma-separated values (CSV) format. All CSV files contain these seven columns with respective data types:
+    <ul>
+      <li>seq (sequence number) as <i>uint16</i> type</li>
+      <li>src (source/transmitter node) as <i>string</i> type</li>
+      <li>dst (destination/receiver node) as <i>string</i> type</li>
+      <li>noise (artificial noise level) as <i>int8</i> type</li>
+      <li>received (packet reception) as <i>boolean</i> type</li>
+      <li>error (error indicator, RSSI == 128) as <i>boolean</i> type</li>
+      <li>rssi (Reception Signal Strength Indicator) as <i>uint8</i> type</li>
+    </ul>
+  </dd>
+  <dt><strong>interpolation.py</strong></dt>
+  <dd>
+    By default, `transform.py` preserve information regarding lost packets and missing RSSI values are filled with zeros. This script provides other interpolation methods on each trace CSV file in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> on <strong>rssi</strong> column. Run script with `-h` or `--help` parameter for further instructions.
   </dd>
 </dl>
 
+## Usage
+
+0. use either **virtualenv** or **conda** environment prior next steps. **(recommended)**
+1. from root of this project run: `pip install -e .` or `conda develop .`
+2. Run specific script e.g. `python ./transform.py`
+
+
 ## Author and license
 
-Scripts for this dataset were written by Adnan Bekan (**adnan.bekan@ijs.si**), Timotej Gale (**timotej.gale@gmail.com**) and Gregor Cerar.
+Scripts for this dataset were written by Gregor Cerar. Contact me via email firstname.lastname@ijs.si pattern.
 
 Copyright (C) 2019 SensorLab, Jožef Stefan Institute http://sensorlab.ijs.si
 
