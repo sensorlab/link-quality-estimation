@@ -7,13 +7,19 @@ def read(fname):
     with open(path.join(path.dirname(__file__), fname)) as f:
         return f.read()
 
-requirements = [
+core_requirements = [
     'numpy',
     'scipy',
     'pandas',
     'matplotlib',
     'seaborn',
 ]
+
+ml_requirements = ['scikit-learn', 'imbalanced-learn', 'joblib']
+jupyter_requirements = ['jupyterlab']
+dev_requirements = ['pylint', 'autopep8']
+cluster_requirements = ['ipyparallel']
+
 
 setup(
     name='LQE',
@@ -27,12 +33,12 @@ setup(
     packages=['datasets'],
     include_package_data=True,
     python_requires='>=3.6',
-    install_requires=[],
+    install_requires=core_requirements,
     extras_require={
-        'extra': requirements,
-        'dev': ['pylint', 'autopep8'],
-        'ml': ['scikit-learn<0.20', 'imbalanced-learn', 'sklearn-pandas', 'scikit-image', 'joblib'],
-        'lab': ['jupyterlab', 'joblib'],
-        'cluster': ['ipyparallel'],
+        'dev': dev_requirements,
+        'ml': ml_requirements,
+        'lab': jupyter_requirements,
+        'cluster': cluster_requirements,
+        'all': dev_requirements + ml_requirements + jupyter_requirements + cluster_requirements
     },
 )
