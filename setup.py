@@ -27,8 +27,9 @@ setup(
     packages=['datasets'],
     include_package_data=True,
     python_requires='>=3.6',
-    install_requires=requirements,
+    install_requires=[],
     extras_require={
+        'extra': requirements,
         'dev': ['pylint', 'autopep8'],
         'ml': ['scikit-learn<0.20', 'imbalanced-learn', 'sklearn-pandas', 'scikit-image', 'joblib'],
         'lab': ['jupyterlab', 'joblib'],

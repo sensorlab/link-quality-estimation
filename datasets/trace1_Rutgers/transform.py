@@ -1,25 +1,32 @@
 import glob
 import multiprocessing as mp
-from os import makedirs, path
+import sys
+import hashlib
+from os import path
 from typing import Generator, Iterator, List, Tuple
-
-from datasets.trace1_Rutgers import DATA_PATH, TRANSFORM_OUTPUT_PATH
-from datasets.helpers import ensure_dir
 
 import numpy as np
 import pandas as pd
 
+from collections import OrderedDict
+
+from datasets.helpers import ensure_dir
+from datasets.trace1_Rutgers import DATA_PATH, TRANSFORM_OUTPUT_PATH
 
 TRACE_FILES = path.join(DATA_PATH, '**', 'sdec*')
 
 
-dtypes = {
-    'rssi': np.uint8,
-    'received': np.bool,
-    'error': np.bool,
-    'seq': np.uint16,
-    'noise': np.int8,
-}
+dtypes = OrderedDict([
+    ('seq', np.uint16),
+    ('src', str),
+    ('dst', str),
+    ('noise', np.int8),
+    ('received', np.bool),
+    ('error', np.bool),
+    ('rssi', np.uint8),
+])
+
+columns = list(dtypes.keys())
 
 
 def get_filenames() -> Iterator[str]:
@@ -42,21 +49,20 @@ def parser(filename: str) -> pd.DataFrame:
         for line in file:
             row = line.split()
 
-            assert len(row) == 2, f'Expected row length 2, got {len(row)}'
+            assert len(row) == 2, 'Expected row length 2, got {}'.format(len(row))
 
             seq, _rssi_ = int(row[0]), np.uint8(row[1])
 
+            if seq < 300:
             # Keep information about received packet
-            if seq < 300 and _rssi_ < 128 and _rssi_ >= 0:
-                rssi[seq] = _rssi_
-                received[seq] = True
-                continue
+                if _rssi_ < 128 and _rssi_ >= 0:
+                    rssi[seq] = _rssi_
+                    received[seq] = True
 
-            # Keep information if RSSI was invalid
-            if seq < 300 and _rssi_ == 128:
-                rssi[seq] = 0
-                error[seq] = True
-                continue
+                else:
+                    # Keep information if RSSI was invalid
+                    #rssi[seq] = 0
+                    error[seq] = True
 
     df = pd.DataFrame(
         data={
@@ -84,23 +90,35 @@ def get_traces() -> Iterator[pd.DataFrame]:
             yield df
 
 
+def __write_traces__(link: pd.DataFrame) -> None:
+    sha1 = hashlib.sha256(
+        link.values.tobytes()
+    ).hexdigest()
+
+    output_path = path.join(
+        TRANSFORM_OUTPUT_PATH,
+        '{}.csv'.format(sha1),
+    )
+
+    assert path.isfile(output_path) == False, 'Filename collision!'
+
+    link.to_csv(
+        ensure_dir(output_path),
+        index=False,
+        columns=columns,
+    )
+
+
 if __name__ == '__main__':
     """This executes if and only if this Python script is called directly."""
     count = 0
-    for link in get_traces():
-        noise = link.noise.values[0]
-        src = link.src.values[0]
-        dst = link.dst.values[0]
 
-        col_order = ['seq', 'src', 'dst', 'noise', 'received', 'rssi', 'error']
-        output_path = f'{TRANSFORM_OUTPUT_PATH}/experiment-{abs(noise // 5) + 1}-noise_level_{abs(noise)}/{src}-{dst}-{noise}dBm.csv'
+    with mp.Pool() as pool:
+        for _ in pool.imap(__write_traces__, get_traces()):
+            count += 1
 
-        link.to_csv(
-            ensure_dir(output_path),
-            index=False,
-            columns=col_order,
-        )
+            # Print progress ...
+            print(count, 'of 4060 links processed')
+            sys.stdout.write('\033[F')
 
-        count += 1
-
-    print(f'Processed {count} files!')
+    print('Done!', count, 'links processed.')
