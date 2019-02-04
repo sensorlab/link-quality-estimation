@@ -1,1 +1,1 @@
--e .[dev,ml,lab,cluster]
+-e .[all]
