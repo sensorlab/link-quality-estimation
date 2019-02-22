@@ -16,7 +16,7 @@ Full dataset description can be found [here](https://crawdad.cs.dartmouth.edu/ru
 
   <dt><strong>transform.py</strong></dt>
   <dd>
-    Transforms traces from <i>data/</i> directory into flat structured, where missing sequence numbers are added, but no interpolation is performed. The output files reside in <i>${PROJECT_ROOT}/featureGenerator/datasets/dataset-2-rutgers-wifi/</i> in a comma-separated values (CSV) format. All CSV files contain these seven columns with respective data types:
+    Transforms traces from <i>data/</i> directory into flat structured, where missing sequence numbers are added, but no interpolation is performed. The output files reside in <i>${PROJECT_ROOT}/output/datasets/dataset-2-rutgers-wifi/</i> in a comma-separated values (CSV) format. All CSV files contain these seven columns with respective data types:
     <ul>
       <li>seq (sequence number) as <i>uint16</i> type</li>
       <li>src (source/transmitter node) as <i>string</i> type</li>

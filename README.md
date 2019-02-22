@@ -8,26 +8,28 @@ Code samples and datasets that are related to link quality estimation.
   <dt>datasets</dt>
   <dd>Datasets (and their corresponding Python scripts) that are related to link quality estimation.</dd>
 
-  <dt>featureGenerator</dt>
-  <dd>Feature generator is a Python script used for extraction and computation of new features from generic data. Output of this script is labelled data in <em>Attribute-Relation File Format</em> (ARFF), which can be further used for data modelling.</dd>
-
-  <dt>wekaClassificationModelBuilder</dt>
-  <dd>Weka classification model builder (WCMB) is a Java program based on Weka (Waikato Environment for Knowledge Analysis). WCMB is used for building custom classification models in bulk by utilizing all possible combinations of input features.</dd>
-
-  <dt>wmewmaEstimator</dt>
-  <dd>Window mean with exponentially weighted moving average (WMEWMA) link quality estimator proposed by A. Woo <em>et al.</em> in paper <em>Taming the Underlying Challenges of Reliable Multihop Routing in Sensor Networks</em> implemented as a simple Python script.</dd>
+  <dt>notebooks</dt>
+  <dd>Jupyter notebooks that are related to the datasets analysis and/or link quality estimation.</dd>
 </dl>
 
 ### Conventional work flow
-
-1. Transform a dataset to a common format used by the feature generator (use dataset-specific scripts).
-2. Use *featureGenerator* to generate features and transform the dataset to the common format used by Weka.
-3. Build models with *wekaClassificationModelBuilder*.
+1. Install python dependencies
+2. Run desired scripts directly (e.g. `python ./datasets/trace1_Rutgers/transform.py`)
+3. Perform analysis on preprocessed dataset:
+    - Use your own tools on CSV files, which were produced in *./output/datasets/<dataset_name>/*
+    - or use this project as python package and adapt it to your needs. (e.g. `from datasets.trace1_Rutgers import get_traces`)
 
 ### Citation
-If you are using our datasets or scripts in your research, citation of the following paper would be greatly appreciated.
+
+If you are using our datasets or scripts in your research, citation of any of the following papers would be greatly appreciated.
+
+[Cerar, G., Mohorčič, M., Gale, T., Fortuna, C. (2019). Analysis of Machine Learning for Link Quality Estimation](https://arxiv.org/abs/1812.08856)
 
 [Kulin, M., Fortuna, C., De Poorter, E., Deschrijver, D., & Moerman, I. (2016). Data-Driven Design of Intelligent Wireless Networks: An Overview and Tutorial. Sensors, 16(6), 790.](http://www.mdpi.com/1424-8220/16/6/790/htm)
+
+### Work in progress
+
+This repository is gradually migrating toward Python 3.4+ and package oriented approach. *Trace1_Rutgers* is currently up to date, while unfortunately other datasets may require Python 2 with obsolete packages for preprocessing. We are sorry for inconvenience.
 
 ### License
 
