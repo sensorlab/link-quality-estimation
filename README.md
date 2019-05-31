@@ -37,4 +37,4 @@ See `README.md` files in individual sub-directories for details.
 
 ### Acknowledgement
 
-The research leading to these results has received funding from the European Horizon 2020 Programme project eWINE under grant agreement No. 688116.
+The research leading to these results has received funding from the European Horizon 2020 Programme projects NRG-5 under grant agreement No. 762013 and eWINE under grant agreement No. 688116.
