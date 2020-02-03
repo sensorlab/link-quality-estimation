@@ -37,9 +37,11 @@ def get_filenames() -> Iterator[str]:
 def parser(filename: str) -> pd.DataFrame:
     """Returns Pandas DataFrame produced from reading and parsing specified Rutgers link trace."""
     # datasets/trace1_Rutgers/data/dbm-5/Results_node1-4_DailyTest_Sat-Oct-15-03_54_00-2005/sdec1-2
+    # node1-4 is Tx node, while sdec1-2 is Rx node in our case
+
     noise = np.int8(filename.split('/')[-3][len('dbm'):])
-    src = filename.split('/')[-2].split('_')[1]
-    dst = 'node' + filename.split('/')[-1][len('sdec'):]
+    tx = filename.split('/')[-2].split('_')[1]
+    rx = 'node' + filename.split('/')[-1][len('sdec'):]
 
     rssi = np.full(shape=300, fill_value=0, dtype=np.uint8)
     received = np.full(shape=300, fill_value=False, dtype=np.bool)
@@ -51,12 +53,12 @@ def parser(filename: str) -> pd.DataFrame:
 
             assert len(row) == 2, 'Expected row length 2, got {}'.format(len(row))
 
-            seq, _rssi_ = int(row[0]), np.uint8(row[1])
+            seq, value = int(row[0]), np.uint8(row[1])
 
             if seq < 300:
-            # Keep information about received packet
-                if _rssi_ < 128 and _rssi_ >= 0:
-                    rssi[seq] = _rssi_
+                # Keep information about received packet
+                if value < 128 and value >= 0:
+                    rssi[seq] = value
                     received[seq] = True
 
                 else:
@@ -74,8 +76,8 @@ def parser(filename: str) -> pd.DataFrame:
 
     df['seq'] = df.index + 1
     df['noise'] = noise
-    df['src'] = src
-    df['dst'] = dst
+    df['src'] = tx
+    df['dst'] = rx
 
     # Convert to appropriate types
     df = df.astype(dtypes)
