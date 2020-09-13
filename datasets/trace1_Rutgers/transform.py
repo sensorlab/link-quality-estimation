@@ -29,9 +29,11 @@ dtypes = OrderedDict([
 columns = list(dtypes.keys())
 
 
-def get_filenames() -> Iterator[str]:
+def get_filenames() -> List[str]:
     """Returns iterator, which iterates through file paths of all Rutgers link traces."""
-    return glob.iglob(TRACE_FILES, recursive=True)
+    filenames = glob.glob(TRACE_FILES, recursive=True)
+    assert len(filenames) != 0
+    return filenames
 
 
 def parser(filename: str) -> pd.DataFrame:
@@ -90,6 +92,15 @@ def get_traces() -> Iterator[pd.DataFrame]:
     with mp.Pool() as pool:
         for df in pool.imap(parser, get_filenames()):
             yield df
+
+
+def get_traces2(n_jobs=None) -> List[pd.DataFrame]:
+    from joblib import delayed, Parallel
+    filenames = get_filenames()
+
+    output = Parallel(n_jobs=n_jobs)(delayed(parser)(filename) for filename in filenames)
+    assert len(output) != 0
+    return output
 
 
 def __write_traces__(link: pd.DataFrame) -> None:
