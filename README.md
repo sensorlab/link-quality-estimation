@@ -23,7 +23,7 @@ Code samples and datasets that are related to link quality estimation.
 
 If you are using our datasets or scripts in your research, citation of any of the following papers would be greatly appreciated.
 
-[Cerar, G., Yetgin, H., Mohorčič, M., Fortuna, C. (2019). Machine Learning for Link Quality Estimation: A Survey](https://arxiv.org/abs/1812.08856)
+[Cerar, G., Yetgin, H., Mohorčič, M., Fortuna, C. (2021). Machine Learning for Link Quality Estimation: A Survey](https://doi.org/10.1109/COMST.2021.3053615)
 
 [Kulin, M., Fortuna, C., De Poorter, E., Deschrijver, D., & Moerman, I. (2016). Data-Driven Design of Intelligent Wireless Networks: An Overview and Tutorial. Sensors, 16(6), 790.](http://www.mdpi.com/1424-8220/16/6/790/htm)
 
