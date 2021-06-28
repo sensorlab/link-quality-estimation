@@ -1,0 +1,19 @@
+name: lqe
+channels:
+  - defaults
+
+dependencies:
+ - python=3.8
+ - anaconda=2021.04
+ - seaborn
+ - joblib
+ - black
+ - scikit-learn
+ - jupyterlab
+ 
+ - pip
+
+ - pip:
+   - SciencePlots
+   - imbalanced-learn
+   - -e .[all]
