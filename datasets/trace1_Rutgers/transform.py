@@ -8,6 +8,8 @@ from typing import Generator, Iterator, List, Tuple
 import numpy as np
 import pandas as pd
 
+from tqdm import tqdm
+
 from collections import OrderedDict
 
 from datasets.helpers import ensure_dir
@@ -21,8 +23,8 @@ dtypes = OrderedDict([
     ('src', str),
     ('dst', str),
     ('noise', np.int8),
-    ('received', np.bool),
-    ('error', np.bool),
+    ('received', bool),
+    ('error', bool),
     ('rssi', np.uint8),
 ])
 
@@ -46,8 +48,8 @@ def parser(filename: str) -> pd.DataFrame:
     rx = 'node' + filename.split('/')[-1][len('sdec'):]
 
     rssi = np.full(shape=300, fill_value=0, dtype=np.uint8)
-    received = np.full(shape=300, fill_value=False, dtype=np.bool)
-    error = np.full(shape=300, fill_value=False, dtype=np.bool)
+    received = np.full(shape=300, fill_value=False, dtype=bool)
+    error = np.full(shape=300, fill_value=False, dtype=bool)
 
     with open(filename, mode='r') as file:
         for line in file:
@@ -124,14 +126,7 @@ def __write_traces__(link: pd.DataFrame) -> None:
 
 if __name__ == '__main__':
     """This executes if and only if this Python script is called directly."""
-    count = 0
 
     with mp.Pool() as pool:
-        for _ in pool.imap(__write_traces__, get_traces()):
-            count += 1
-
-            # Print progress ...
-            print(count, 'of 4060 links processed')
-            sys.stdout.write('\033[F')
-
-    print('Done!', count, 'links processed.')
+        for _ in tqdm(pool.imap(__write_traces__, get_traces()), unit=' traces'):
+            pass
